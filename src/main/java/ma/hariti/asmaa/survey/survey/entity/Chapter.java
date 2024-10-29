@@ -19,7 +19,7 @@ public class Chapter {
     @Column(nullable = false)
     private String title;
 
-    @JsonBackReference("survey-chapters")  // Add identifier
+    @JsonBackReference("survey-chapters")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id", nullable = false)
     private Survey survey;

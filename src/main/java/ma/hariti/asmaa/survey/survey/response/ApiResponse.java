@@ -24,5 +24,10 @@ public class ApiResponse<T> {
         this.status = status;
     }
 
-
+    public ApiResponse(String message, T errors, int status) {
+        this.success = false;
+        this.message = message;
+        this.data = errors;
+        this.status = status;
+    }
 }

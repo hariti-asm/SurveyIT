@@ -1,6 +1,5 @@
 package ma.hariti.asmaa.survey.survey.response;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,9 +20,15 @@ public class ResponseBuilder {
                 .body(new ApiResponse<>(data));
     }
 
-    public static <T> ResponseEntity<ApiResponse<String>> badRequest(String message) {
+    public static <T> ResponseEntity<ApiResponse<T>> badRequest(String message) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>(message, 400));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> badRequest(String message, T errors) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse<>(message, errors, 400));
     }
 }
