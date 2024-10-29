@@ -1,4 +1,4 @@
-package ma.hariti.asmaa.survey.survey.dto.response;
+package ma.hariti.asmaa.survey.survey.response;
 
 import lombok.Getter;
 import lombok.Setter;

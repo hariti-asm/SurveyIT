@@ -21,7 +21,7 @@ public class Answer {
     @Column(name = "selection_count")
     private Integer selectionCount = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 }
