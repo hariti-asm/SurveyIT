@@ -1,15 +1,15 @@
 package ma.hariti.asmaa.survey.survey.entity;
 
-
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 
 @Entity
-@Table(name = "answers")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@Table(name = "answers")
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +18,9 @@ public class Answer {
     @Column(nullable = false)
     private String text;
 
-    @Column(name = "selection_count")
-    private Integer selectionCount = 0;
+    private Integer selectionCount;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 }

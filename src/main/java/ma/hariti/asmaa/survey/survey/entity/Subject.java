@@ -1,27 +1,22 @@
 package ma.hariti.asmaa.survey.survey.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.util.List;
-
-import java.util.ArrayList;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "subjects")
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    @Column(nullable = false)
+    private String name;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-    private List<Question> questions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "subSubject")
-    private List<Subject> subSubjects = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "sub_subject_id")
-    private Subject subSubject;
+    private String description;
 }

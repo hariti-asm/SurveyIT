@@ -1,33 +1,42 @@
 package ma.hariti.asmaa.survey.survey.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ma.hariti.asmaa.survey.survey.enums.QuestionType;
 
-import java.util.List;
-import jakarta.persistence.*;
-import ma.hariti.asmaa.survey.survey.enums.QuestionType;
-import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "questions")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String text;
 
-    private Integer answerCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chapter_id", nullable = false)
+    private Chapter chapter;
 
-    @Enumerated(EnumType.STRING)
-    private QuestionType questionType;
-
-    @ManyToOne
-    @JoinColumn(name = "subject_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "question",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Answer> answers = new ArrayList<>();
+
+    private QuestionType type;
+
+    private Boolean required;
 }

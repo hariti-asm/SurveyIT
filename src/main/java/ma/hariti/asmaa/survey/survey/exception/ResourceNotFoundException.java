@@ -1,4 +1,4 @@
-package ma.hariti.asmaa.survey.survey.exceptions;
+package ma.hariti.asmaa.survey.survey.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
