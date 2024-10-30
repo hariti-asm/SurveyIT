@@ -1,33 +1,31 @@
 package ma.hariti.asmaa.survey.survey.response;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-@Setter
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
-    private boolean success;
-    private T data;
-    private String message;
-    private String error;
-    private int status;
+    private final boolean success;
+    private final T data;
+    private final String message;
+    private final String error;
+    private final int status;
 
-    public ApiResponse(T data) {
-        this.success = true;
-        this.data = data;
-        this.status = 200;
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(true, data, null, null, 200);
     }
 
-    public ApiResponse(String error, int status) {
-        this.success = false;
-        this.error = error;
-        this.status = status;
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return new ApiResponse<>(true, data, message, null, 200);
     }
 
-    public ApiResponse(String message, T errors, int status) {
-        this.success = false;
-        this.message = message;
-        this.data = errors;
-        this.status = status;
+    public static <T> ApiResponse<T> error(String error, int status) {
+        return new ApiResponse<>(false, null, null, error, status);
+    }
+
+    public static <T> ApiResponse<T> error(String error, String message, int status) {
+        return new ApiResponse<>(false, null, message, error, status);
     }
 }

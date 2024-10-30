@@ -13,7 +13,7 @@ import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        uses = {AnswerMapper.class, ChapterMapper.class, SubjectMapper.class},
+        uses = {AnswerMapper.class, ChapterMapper.class, ChapterMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface QuestionMapper {
@@ -21,18 +21,15 @@ public interface QuestionMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "chapter", ignore = true)
-    @Mapping(target = "subject", ignore = true)
     @Mapping(target = "answers", ignore = true)
     Question toEntity(QuestionDTO questionDTO);
 
     @Mapping(source = "chapter.id", target = "chapterId")
-    @Mapping(source = "subject.id", target = "subjectId")
     @Mapping(source = "answers", target = "answers")
     QuestionDTO toDTO(Question question);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "chapter", ignore = true)
-    @Mapping(target = "subject", ignore = true)
     void updateQuestionFromDTO(QuestionDTO questionDTO, @MappingTarget Question question);
 
     List<QuestionDTO> toDTOList(List<Question> questions);

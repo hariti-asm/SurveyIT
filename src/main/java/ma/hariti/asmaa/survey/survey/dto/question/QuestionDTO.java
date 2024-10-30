@@ -10,7 +10,6 @@ public class QuestionDTO {
     private Long id;
     private String text;
     private Long chapterId;
-    private Long subjectId;
     private List<AnswerDTO> answers;
     private QuestionType type;
     private Boolean required;

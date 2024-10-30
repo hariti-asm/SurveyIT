@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -19,8 +22,15 @@ public class Chapter {
     @Column(nullable = false)
     private String title;
 
-    @JsonBackReference("survey-chapters")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_id", nullable = false)
-    private Survey survey;
+    @JoinColumn(name = "survey_edition_id", nullable = false)
+    private SurveyEdition surveyEdition;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_chapter_id")
+    private Chapter parentChapter;
+
+    @OneToMany(mappedBy = "parentChapter", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Chapter> subChapters = new ArrayList<>();
 }

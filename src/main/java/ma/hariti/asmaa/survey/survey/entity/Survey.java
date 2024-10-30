@@ -10,10 +10,10 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+@Entity
 @Table(name = "surveys")
 @NoArgsConstructor
 @Data
-@Entity
 public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,16 +24,11 @@ public class Survey {
 
     private String description;
 
-    @JsonManagedReference("survey-chapters")
-    @OneToMany(
-            mappedBy = "survey",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Chapter> chapters = new ArrayList<>();
-
     @JsonBackReference("owner-surveys")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
+
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
+    private List<SurveyEdition> surveyEditions = new ArrayList<>();
 }

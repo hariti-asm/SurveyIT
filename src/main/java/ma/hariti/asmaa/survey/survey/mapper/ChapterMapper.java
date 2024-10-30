@@ -5,34 +5,19 @@ import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
-
 import java.util.List;
 
-@Mapper(
-        componentModel = "spring",
-        uses = {QuestionMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", uses = {QuestionMapper.class})
 public interface ChapterMapper {
-    ChapterMapper INSTANCE = Mappers.getMapper(ChapterMapper.class);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "survey", ignore = true)
-    @Mapping(target = "title", source = "title")
+    @Mapping(target = "surveyEditionId", source = "surveyEdition.id")
+    @Mapping(target = "parentChapterId", source = "parentChapter.id")
+    ChapterDTO toDto(Chapter chapter);
+
+    @Mapping(target = "surveyEdition", ignore = true)
+    @Mapping(target = "parentChapter", ignore = true)
+    @Mapping(target = "subChapters", ignore = true)
     Chapter toEntity(ChapterDTO chapterDTO);
 
-    @Mapping(source = "survey.id", target = "surveyId")
-    @Mapping(source = "title", target = "title")
-    ChapterDTO toDTO(Chapter chapter);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "survey", ignore = true)
-    @Mapping(target = "title", source = "title")
-    void updateChapterFromDTO(ChapterDTO chapterDTO, @MappingTarget Chapter chapter);
-
-    List<ChapterDTO> toDTOList(List<Chapter> chapters);
-
-    List<Chapter> toEntityList(List<ChapterDTO> chapterDTOs);
+    List<ChapterDTO> toDtoList(List<Chapter> chapters);
 }
