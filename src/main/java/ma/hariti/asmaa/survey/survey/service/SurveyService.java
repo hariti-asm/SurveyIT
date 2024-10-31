@@ -11,7 +11,6 @@ import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
-import ma.hariti.asmaa.survey.survey.exception.DuplicateTitleException; // Import the new exception
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,7 +76,7 @@ public class SurveyService {
     private void validateSurveyTitle(String title, Long surveyId) {
         Optional<Survey> existingSurvey = surveyRepository.findByTitle(title);
         if (existingSurvey.isPresent() && !existingSurvey.get().getId().equals(surveyId)) {
-            throw new DuplicateTitleException("A survey with this title already exists.");
+            throw new IllegalStateException("A survey with this title already exists.");
         }
     }
 

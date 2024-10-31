@@ -8,7 +8,6 @@ public class SurveyResultsDTO {
     private String surveyTitle;
     private List<ChapterResultDTO> chapterResults;
 
-    // Getter and Setter for surveyTitle
     public String getSurveyTitle() {
         return surveyTitle;
     }
@@ -17,7 +16,6 @@ public class SurveyResultsDTO {
         this.surveyTitle = surveyTitle;
     }
 
-    // Getter and Setter for chapterResults
     public List<ChapterResultDTO> getChapterResults() {
         return chapterResults;
     }
