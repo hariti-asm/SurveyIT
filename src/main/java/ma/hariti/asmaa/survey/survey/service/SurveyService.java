@@ -1,21 +1,19 @@
 package ma.hariti.asmaa.survey.survey.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.survey.SurveyDTO;
-import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Owner;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
 import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
-import ma.hariti.asmaa.survey.survey.exception.DuplicateTitleException;
-import ma.hariti.asmaa.survey.survey.exception.ResourceNotFoundException;
 import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
+import ma.hariti.asmaa.survey.survey.exception.DuplicateTitleException; // Import the new exception
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,9 +51,6 @@ public class SurveyService {
         survey.setOwner(owner);
     }
 
-
-
-
     public SurveyDTO getSurveyById(Long id) {
         Survey survey = findSurveyOrThrow(id);
         return surveyMapper.toDto(survey);
@@ -85,13 +80,14 @@ public class SurveyService {
             throw new DuplicateTitleException("A survey with this title already exists.");
         }
     }
+
     private Owner findAndValidateOwner(Long ownerId) {
         return ownerRepository.findById(ownerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id: " + ownerId));
+                .orElseThrow(() -> new EntityNotFoundException("Owner not found with id: " + ownerId));
     }
 
     private Survey findSurveyOrThrow(Long id) {
         return surveyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Survey not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found with id: " + id));
     }
 }
