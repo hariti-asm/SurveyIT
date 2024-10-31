@@ -1,6 +1,6 @@
 package ma.hariti.asmaa.survey.survey.controller;
 
-import ma.hariti.asmaa.survey.survey.dto.survey.SurveyDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.service.SurveyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class SurveyController {
     }
 
     @PostMapping
-    public ResponseEntity<SurveyDTO> createSurvey(@RequestBody SurveyDTO surveyDTO) {
-        SurveyDTO createdSurvey = surveyService.createSurvey(surveyDTO);
+    public ResponseEntity<CreateSurveyRequestDTO> createSurvey(@RequestBody CreateSurveyRequestDTO createSurveyRequestDTO) {
+        CreateSurveyRequestDTO createdSurvey = surveyService.createSurvey(createSurveyRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSurvey);
 
     }

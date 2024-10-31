@@ -3,7 +3,7 @@ package ma.hariti.asmaa.survey.survey.dto.surveyEdition;
 
 import lombok.Data;
 import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterDTO;
-import ma.hariti.asmaa.survey.survey.dto.survey.SurveyDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +14,6 @@ public class SurveyEditionDTO {
     private LocalDate creationDate;
     private LocalDate startDate;
     private Integer year;
-    private SurveyDTO survey;
+    private CreateSurveyRequestDTO survey;
     private List<ChapterDTO> chapters;
 }

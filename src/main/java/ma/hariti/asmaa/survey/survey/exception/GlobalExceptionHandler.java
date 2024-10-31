@@ -15,8 +15,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDTO<Map<String, String>>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
@@ -29,7 +27,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseDTO.error("Validation failed", errors, "Validation errors occurred", 400));
+                .body(ApiResponseDTO.error("Validation failed", errors, 400));
     }
 
     @ExceptionHandler(Exception.class)
@@ -39,15 +37,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponseDTO.error(ex.getMessage(), 500));
     }
 
-
-    //duplicated title
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleIllegalStateException(IllegalStateException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponseDTO.error(ex.getMessage(), 409));
     }
-    //not found
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity

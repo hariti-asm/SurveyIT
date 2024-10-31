@@ -3,7 +3,7 @@ package ma.hariti.asmaa.survey.survey.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.hariti.asmaa.survey.survey.dto.survey.SurveyDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.entity.Owner;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
 import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
@@ -26,14 +26,12 @@ public class SurveyService {
     private final SurveyMapper surveyMapper;
     private final ChapterMapper chapterMapper;
 
-    public SurveyDTO createSurvey(SurveyDTO surveyDTO) {
-        validateSurveyTitle(surveyDTO.getTitle(), null);
+    public CreateSurveyRequestDTO createSurvey(CreateSurveyRequestDTO createSurveyRequestDTO) {
+        validateSurveyTitle(createSurveyRequestDTO.getTitle(), null);
 
-        // Create Survey
-        Survey survey = surveyMapper.toEntity(surveyDTO);
-        setOwnerForSurvey(survey, surveyDTO.getOwnerId());
+        Survey survey = surveyMapper.toEntity(createSurveyRequestDTO);
+        setOwnerForSurvey(survey, createSurveyRequestDTO.getOwnerId());
 
-        // Create SurveyEdition
         SurveyEdition surveyEdition = new SurveyEdition();
         surveyEdition.setSurvey(survey);
         surveyEdition.setStartDate(surveyEdition.getStartDate());
@@ -50,25 +48,25 @@ public class SurveyService {
         survey.setOwner(owner);
     }
 
-    public SurveyDTO getSurveyById(Long id) {
+    public CreateSurveyRequestDTO getSurveyById(Long id) {
         Survey survey = findSurveyOrThrow(id);
         return surveyMapper.toDto(survey);
     }
 
-    public List<SurveyDTO> getAllSurveys() {
+    public List<CreateSurveyRequestDTO> getAllSurveys() {
         List<Survey> surveys = surveyRepository.findAll();
         return surveys.stream()
                 .map(surveyMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public SurveyDTO updateSurvey(Long id, SurveyDTO surveyDTO) {
+    public CreateSurveyRequestDTO updateSurvey(Long id, CreateSurveyRequestDTO createSurveyRequestDTO) {
         Survey existingSurvey = findSurveyOrThrow(id);
 
-        if (!existingSurvey.getTitle().equals(surveyDTO.getTitle())) {
-            validateSurveyTitle(surveyDTO.getTitle(), id); // Pass the id for updates
+        if (!existingSurvey.getTitle().equals(createSurveyRequestDTO.getTitle())) {
+            validateSurveyTitle(createSurveyRequestDTO.getTitle(), id); // Pass the id for updates
         }
-        surveyMapper.updateEntityFromDto(surveyDTO, existingSurvey);
+        surveyMapper.updateEntityFromDto(createSurveyRequestDTO, existingSurvey);
         Survey updatedSurvey = surveyRepository.save(existingSurvey);
         return surveyMapper.toDto(updatedSurvey);
     }
