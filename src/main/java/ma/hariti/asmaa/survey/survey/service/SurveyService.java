@@ -4,9 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyRequestDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyResponseDTO;
 import ma.hariti.asmaa.survey.survey.entity.Owner;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
-import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
@@ -14,7 +15,6 @@ import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,18 +27,9 @@ public class SurveyService {
     private final ChapterMapper chapterMapper;
 
     public CreateSurveyRequestDTO createSurvey(CreateSurveyRequestDTO createSurveyRequestDTO) {
-        validateSurveyTitle(createSurveyRequestDTO.getTitle(), null);
 
         Survey survey = surveyMapper.toEntity(createSurveyRequestDTO);
         setOwnerForSurvey(survey, createSurveyRequestDTO.getOwnerId());
-
-        SurveyEdition surveyEdition = new SurveyEdition();
-        surveyEdition.setSurvey(survey);
-        surveyEdition.setStartDate(surveyEdition.getStartDate());
-        surveyEdition.setYear(surveyEdition.getYear());
-
-        survey.getSurveyEditions().add(surveyEdition);
-
         Survey savedSurvey = surveyRepository.save(survey);
         return surveyMapper.toDto(savedSurvey);
     }
@@ -60,31 +51,47 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public CreateSurveyRequestDTO updateSurvey(Long id, CreateSurveyRequestDTO createSurveyRequestDTO) {
-        Survey existingSurvey = findSurveyOrThrow(id);
-
-        if (!existingSurvey.getTitle().equals(createSurveyRequestDTO.getTitle())) {
-            validateSurveyTitle(createSurveyRequestDTO.getTitle(), id); // Pass the id for updates
-        }
-        surveyMapper.updateEntityFromDto(createSurveyRequestDTO, existingSurvey);
-        Survey updatedSurvey = surveyRepository.save(existingSurvey);
-        return surveyMapper.toDto(updatedSurvey);
+    private void validateSurveyTitle(String title, Long excludeId) {
+        surveyRepository.findByTitle(title)
+                .ifPresent(existingSurvey -> {
+                    if (!existingSurvey.getId().equals(excludeId)) {
+                        throw new IllegalStateException("Survey with title '" + title + "' already exists");
+                    }
+                });
     }
 
-    private void validateSurveyTitle(String title, Long surveyId) {
-        Optional<Survey> existingSurvey = surveyRepository.findByTitle(title);
-        if (existingSurvey.isPresent() && !existingSurvey.get().getId().equals(surveyId)) {
-            throw new IllegalStateException("A survey with this title already exists.");
-        }
-    }
 
     private Owner findAndValidateOwner(Long ownerId) {
         return ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new EntityNotFoundException("Owner not found with id: " + ownerId));
     }
-
     private Survey findSurveyOrThrow(Long id) {
         return surveyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Survey not found with id: " + id));
     }
+    public UpdateSurveyResponseDTO updateSurvey(Long id, UpdateSurveyRequestDTO updateSurveyRequestDTO) {
+        Survey existingSurvey = findSurveyOrThrow(id);
+
+        // Validate that the IDs match
+        if (!id.equals(updateSurveyRequestDTO.getId())) {
+            throw new IllegalArgumentException("Path ID and request body ID must match");
+        }
+
+        // Validate title uniqueness only if title has changed
+        if (!existingSurvey.getTitle().equals(updateSurveyRequestDTO.getTitle())) {
+            validateSurveyTitle(updateSurveyRequestDTO.getTitle(), id);
+        }
+
+        // Update the entity using the correct mapper method
+        surveyMapper.updateEntityFromUpdateDto(updateSurveyRequestDTO, existingSurvey);
+
+        // Save the updated entity
+        Survey updatedSurvey = surveyRepository.save(existingSurvey);
+
+        // Convert to response DTO using the correct mapper method
+        return surveyMapper.toUpdateResponseDto(updatedSurvey);
+    }
+
+
+
 }
