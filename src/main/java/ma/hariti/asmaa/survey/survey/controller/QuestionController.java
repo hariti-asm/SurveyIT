@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.api.ApiResponseDTO;
 import ma.hariti.asmaa.survey.survey.dto.question.QuestionDTO;
+import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.service.QuestionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,32 +21,32 @@ public class QuestionController {
 
     @PostMapping("/{subChapterId}/questions")
     public ResponseEntity<QuestionDTO> addQuestion(
-            @PathVariable Long surveyId, // Added surveyId and chapterId
+            @PathVariable Long surveyId,
             @PathVariable Long chapterId,
             @PathVariable Long subChapterId,
             @Valid @RequestBody QuestionDTO questionDTO) {
         QuestionDTO savedQuestion = questionService.addQuestionToSubChapter(subChapterId, questionDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedQuestion);
     }
-
     @GetMapping("/{subChapterId}/questions")
-    public ResponseEntity<ApiResponseDTO<List<QuestionDTO>>> getQuestions(
-            @PathVariable Long surveyId, // Added surveyId and chapterId
-            @PathVariable Long chapterId,
-            @PathVariable Long subChapterId) {
-        List<QuestionDTO> questions = questionService.getQuestionsForSubChapter(subChapterId);
-        return ResponseEntity.ok(ApiResponseDTO.success(questions)); // Updated status code to OK
+    public ResponseEntity<ApiResponseDTO<Page<QuestionDTO>>> getQuestions(
+            @PathVariable Long subChapterId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<QuestionDTO> questionsPage = questionService.getQuestionsForSubChapter(subChapterId, page, size);
+        return ResponseEntity.ok(ApiResponseDTO.success(questionsPage, (int) questionsPage.getTotalElements()));
     }
 
     @PutMapping("/{subChapterId}/questions/{questionId}")
     public ResponseEntity<QuestionDTO> updateQuestion(
-            @PathVariable Long surveyId, // Added surveyId and chapterId
+            @PathVariable Long surveyId,
             @PathVariable Long chapterId,
             @PathVariable Long subChapterId,
             @PathVariable Long questionId,
             @Valid @RequestBody QuestionDTO questionDTO) {
         QuestionDTO updatedQuestion = questionService.updateQuestion(subChapterId, questionId, questionDTO);
-        return ResponseEntity.ok(updatedQuestion); // Updated status code to OK
+        return ResponseEntity.ok(updatedQuestion);
     }
 
     @DeleteMapping("/{subChapterId}/questions/{questionId}")

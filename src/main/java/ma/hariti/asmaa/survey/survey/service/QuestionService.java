@@ -9,6 +9,8 @@ import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.mapper.QuestionMapper;
 import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,18 +35,14 @@ public class QuestionService {
             throw new IllegalArgumentException("Chapter with id: " + subChapterId + " is not a subchapter");
         }
 
-        // Map DTO to entity
         Question question = questionMapper.toEntity(questionDTO);
 
-        // Set relationships
         question.setSubChapter(subChapter);
         subChapter.getQuestions().add(question);
 
-        // Save the question
         Question savedQuestion = questionRepository.save(question);
 
-        // Update the chapter with the new question
-        chapterRepository.save(subChapter);  // Changed from chapterService.save to chapterRepository.save
+        chapterRepository.save(subChapter);
 
         // Return the DTO
         return questionMapper.toDTO(savedQuestion);
@@ -75,7 +73,6 @@ public class QuestionService {
             throw new IllegalArgumentException("Question does not belong to this subchapter");
         }
 
-        // Update question fields
         questionMapper.updateQuestionFromDTO(questionDTO, existingQuestion);
         existingQuestion.setSubChapter(subChapter);
 
@@ -90,16 +87,29 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
 
-        // Verify the question belongs to this subchapter
         if (!question.getSubChapter().getId().equals(subChapterId)) {
             throw new IllegalArgumentException("Question does not belong to this subchapter");
         }
 
         subChapter.getQuestions().remove(question);
-        chapterRepository.save(subChapter);  // Save the updated subchapter
+        chapterRepository.save(subChapter);
         questionRepository.delete(question);
     }
+    public Page<QuestionDTO> getQuestionsForSubChapter(Long subChapterId, int page, int size) {
+        Page<Question> questionsPage = questionRepository.findBySubChapterId(subChapterId, PageRequest.of(page, size));
 
+        return questionsPage.map(question -> {
+            QuestionDTO dto = new QuestionDTO();
+            dto.setId(question.getId());
+            dto.setText(question.getText());
+            dto.setSubChapterId(question.getSubChapter().getId());
+            dto.setChapterId(question.getChapter().getId());
+            dto.setType(question.getType());
+            dto.setAnswerCount(question.getAnswerCount());
+            dto.setRequired(question.getRequired());
+            return dto;
+        });
+    }
     public QuestionDTO getQuestionById(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
