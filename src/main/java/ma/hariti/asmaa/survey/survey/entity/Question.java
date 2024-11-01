@@ -24,8 +24,10 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
-
-
+ private int answerCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_chapter_id", nullable = false)
+    private Chapter subChapter;
 
     @OneToMany(
             mappedBy = "question",

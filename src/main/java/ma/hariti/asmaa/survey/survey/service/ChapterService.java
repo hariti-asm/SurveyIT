@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterRequestDTO;
 import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
-import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 @Transactional
@@ -131,5 +131,8 @@ public class ChapterService {
         chapterRepository.save(parentChapter);
 
         return chapterMapper.toDto(savedSubChapter);
+    }
+    public Optional<Chapter> findById(Long chapterId) {
+        return chapterRepository.findById(chapterId);
     }
 }

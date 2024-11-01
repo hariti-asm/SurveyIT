@@ -28,19 +28,6 @@ public class ChapterRequestDTO {
 
     private List<ChapterRequestDTO> subChapters = new ArrayList<>();
 
-    public void addSubChapter(ChapterRequestDTO subChapter) {
-        if (this.subChapters == null) {
-            this.subChapters = new ArrayList<>();
-        }
-        subChapter.setParentChapterId(this.id);
-        this.subChapters.add(subChapter);
-    }
 
-    public boolean isRootChapter() {
-        return parentChapterId == null;
-    }
 
-    public boolean hasSubChapters() {
-        return subChapters != null && !subChapters.isEmpty();
-    }
 }

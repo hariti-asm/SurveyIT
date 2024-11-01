@@ -33,4 +33,12 @@ public class Chapter {
     @OneToMany(mappedBy = "parentChapter", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Chapter> subChapters = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "subChapter",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonBackReference
+    private List<Question> questions = new ArrayList<>();
 }
