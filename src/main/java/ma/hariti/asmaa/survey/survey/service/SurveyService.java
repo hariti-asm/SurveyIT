@@ -72,23 +72,18 @@ public class SurveyService {
     public UpdateSurveyResponseDTO updateSurvey(Long id, UpdateSurveyRequestDTO updateSurveyRequestDTO) {
         Survey existingSurvey = findSurveyOrThrow(id);
 
-        // Validate that the IDs match
         if (!id.equals(updateSurveyRequestDTO.getId())) {
             throw new IllegalArgumentException("Path ID and request body ID must match");
         }
 
-        // Validate title uniqueness only if title has changed
         if (!existingSurvey.getTitle().equals(updateSurveyRequestDTO.getTitle())) {
             validateSurveyTitle(updateSurveyRequestDTO.getTitle(), id);
         }
 
-        // Update the entity using the correct mapper method
         surveyMapper.updateEntityFromUpdateDto(updateSurveyRequestDTO, existingSurvey);
 
-        // Save the updated entity
         Survey updatedSurvey = surveyRepository.save(existingSurvey);
 
-        // Convert to response DTO using the correct mapper method
         return surveyMapper.toUpdateResponseDto(updatedSurvey);
     }
 

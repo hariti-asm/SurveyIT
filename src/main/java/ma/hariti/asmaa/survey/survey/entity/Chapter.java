@@ -23,8 +23,8 @@ public class Chapter {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_edition_id", nullable = false)
-    private SurveyEdition surveyEdition;
+    @JoinColumn(name = "survey_id", nullable = false)
+    private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_chapter_id")

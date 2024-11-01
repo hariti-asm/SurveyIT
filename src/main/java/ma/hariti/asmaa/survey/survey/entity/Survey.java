@@ -29,7 +29,9 @@ public class Survey {
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     private List<SurveyEdition> surveyEditions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
+    private List<Chapter> chapters = new ArrayList<>();
 }

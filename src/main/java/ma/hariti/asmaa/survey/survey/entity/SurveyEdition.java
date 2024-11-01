@@ -21,10 +21,6 @@ public class SurveyEdition {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    @OneToMany(mappedBy = "surveyEdition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Chapter> chapters;
-    public void addChapter(Chapter chapter) {
-        chapters.add(chapter);
-        chapter.setSurveyEdition(this);
-    }
+
+
 }
