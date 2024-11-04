@@ -44,7 +44,6 @@ public class QuestionService {
 
         chapterRepository.save(subChapter);
 
-        // Return the DTO
         return questionMapper.toDTO(savedQuestion);
     }
 

@@ -12,6 +12,9 @@ import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,11 +47,15 @@ public class SurveyService {
         return surveyMapper.toDto(survey);
     }
 
-    public List<CreateSurveyRequestDTO> getAllSurveys() {
-        List<Survey> surveys = surveyRepository.findAll();
-        return surveys.stream()
-                .map(surveyMapper::toDto)
-                .collect(Collectors.toList());
+    @Transactional()
+    public Page<CreateSurveyRequestDTO> getAllSurveys(Pageable pageable) {
+        Page<Survey> surveyPage = surveyRepository.findAll(pageable);
+
+        return surveyPage.map(survey -> {
+            CreateSurveyRequestDTO dto = new CreateSurveyRequestDTO();
+            BeanUtils.copyProperties(survey, dto);
+            return dto;
+        });
     }
 
     private void validateSurveyTitle(String title, Long excludeId) {
