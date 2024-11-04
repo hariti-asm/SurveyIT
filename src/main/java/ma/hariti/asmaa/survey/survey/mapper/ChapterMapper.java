@@ -10,13 +10,14 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {QuestionMapper.class})
 public interface ChapterMapper {
 
-    @Mapping(target = "surveyId", source = "survey.id")
+    @Mapping(target = "surveyEditionId", source = "surveyEdition.id")
     @Mapping(target = "parentChapterId", source = "parentChapter.id")
     ChapterRequestDTO toDto(Chapter chapter);
 
-    @Mapping(target = "survey", ignore = true)
+    @Mapping(target = "surveyEdition", ignore = true)
     @Mapping(target = "parentChapter", ignore = true)
     @Mapping(target = "subChapters", ignore = true)
+    @Mapping(target = "questions", ignore = true)
     Chapter toEntity(ChapterRequestDTO chapterRequestDTO);
 
     List<ChapterRequestDTO> toDtoList(List<Chapter> chapters);

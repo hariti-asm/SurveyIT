@@ -1,12 +1,9 @@
 package ma.hariti.asmaa.survey.survey.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +29,5 @@ public class Survey {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     private List<SurveyEdition> surveyEditions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
-    private List<Chapter> chapters = new ArrayList<>();
+
 }

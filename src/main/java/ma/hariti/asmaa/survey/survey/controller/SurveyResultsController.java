@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/surveys")
 @RequiredArgsConstructor
 public class SurveyResultsController {
-
     private final SurveyResultsService surveyResultsService;
 
-    @GetMapping("/{surveyId}/results")
-    public ResponseEntity<ApiResponseDTO<SurveyResultsDTO>> getSurveyResults(@PathVariable Long surveyId) {
+    @GetMapping("/{surveyId}/editions/{editionId}/results")
+    public ResponseEntity<ApiResponseDTO<SurveyResultsDTO>> getSurveyResults(@PathVariable Long surveyId, @PathVariable Long editionId) {
         SurveyResultsDTO results = surveyResultsService.getSurveyResults(surveyId);
         return ResponseEntity.ok(ApiResponseDTO.success(results));
     }

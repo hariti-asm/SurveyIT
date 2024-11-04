@@ -5,18 +5,19 @@ import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterResultDTO;
 import ma.hariti.asmaa.survey.survey.dto.chapter.SubChapterResultDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.SurveyResultsDTO;
+import ma.hariti.asmaa.survey.survey.entity.Answer;
 import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Question;
-import ma.hariti.asmaa.survey.survey.entity.Answer;
-
 import ma.hariti.asmaa.survey.survey.entity.Survey;
+import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class SurveyResultsService {
@@ -26,9 +27,17 @@ public class SurveyResultsService {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new EntityNotFoundException("Survey not found with id: " + surveyId));
 
+        List<SurveyEdition> surveyEditions = survey.getSurveyEditions();
+        SurveyEdition latestSurveyEdition = surveyEditions.stream()
+                .max(Comparator.comparing(SurveyEdition::getCreationDate))
+                .orElseThrow(() -> new EntityNotFoundException("No survey editions found for survey with id: " + surveyId));
+
         SurveyResultsDTO resultsDTO = new SurveyResultsDTO();
         resultsDTO.setSurveyTitle(survey.getTitle());
-        resultsDTO.setChapters(processChapters(survey.getChapters()));
+
+        List<ChapterResultDTO> chapterResults = processChapters(latestSurveyEdition.getChapters());
+        resultsDTO.setChapters(chapterResults);
+
         return resultsDTO;
     }
 
@@ -36,7 +45,6 @@ public class SurveyResultsService {
         return chapters.stream()
                 .filter(chapter -> chapter.getParentChapter() == null)
                 .map(this::processChapter)
-                .filter(chapter -> !chapter.getSubChapters().isEmpty())
                 .collect(Collectors.toList());
     }
 
@@ -44,19 +52,12 @@ public class SurveyResultsService {
         ChapterResultDTO chapterDTO = new ChapterResultDTO();
         chapterDTO.setTitle(chapter.getTitle());
 
-        List<SubChapterResultDTO> validSubChapters = chapter.getSubChapters().stream()
+        List<SubChapterResultDTO> subChapters = chapter.getSubChapters().stream()
                 .map(this::createSubChapterDTO)
-                .filter(this::isValidSubChapter)
                 .collect(Collectors.toList());
 
-        chapterDTO.setSubChapters(validSubChapters);
+        chapterDTO.setSubChapters(subChapters);
         return chapterDTO;
-    }
-
-    private boolean isValidSubChapter(SubChapterResultDTO subChapter) {
-        return subChapter.getQuestion() != null
-                && subChapter.getAnswers() != null
-                && !subChapter.getAnswers().isEmpty();
     }
 
     private SubChapterResultDTO createSubChapterDTO(Chapter subChapter) {
@@ -74,12 +75,8 @@ public class SurveyResultsService {
                             Answer::getSelectionCount
                     ));
 
-            if (!validAnswers.isEmpty()) {
-                dto.setAnswers(validAnswers);
-                dto.setTotalAnswers(validAnswers.values().stream()
-                        .mapToInt(Integer::intValue)
-                        .sum());
-            }
+            dto.setAnswers(validAnswers);
+            dto.setTotalAnswers(validAnswers.values().stream().mapToInt(Integer::intValue).sum());
         }
 
         return dto;

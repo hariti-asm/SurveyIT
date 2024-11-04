@@ -23,8 +23,8 @@ public class Chapter {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_id", nullable = false)
-    private Survey survey;
+    @JoinColumn(name = "survey_edition_id", nullable = false)
+    private SurveyEdition surveyEdition; // This is correct
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_chapter_id")
@@ -35,7 +35,7 @@ public class Chapter {
     private List<Chapter> subChapters = new ArrayList<>();
 
     @OneToMany(
-            mappedBy = "subChapter",
+            mappedBy = "chapter", // Ensure this refers to the correct property in Question entity
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )

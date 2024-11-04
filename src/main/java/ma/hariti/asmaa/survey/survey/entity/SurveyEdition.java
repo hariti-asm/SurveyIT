@@ -17,10 +17,10 @@ public class SurveyEdition {
     private LocalDate startDate;
     private Integer year;
 
+    @OneToMany(mappedBy = "surveyEdition", cascade = CascadeType.ALL)
+    private List<Chapter> chapters;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id")
     private Survey survey;
-
-
-
 }

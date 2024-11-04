@@ -22,15 +22,15 @@ public class ChapterController {
     public ResponseEntity<ApiResponseDTO<ChapterRequestDTO>> addChapter(
             @PathVariable Long surveyId,
             @Valid @RequestBody ChapterRequestDTO chapterRequestDTO) {
-        ChapterRequestDTO savedChapter = chapterService.addChapterToSurvey(surveyId, chapterRequestDTO);
+        ChapterRequestDTO savedChapter = chapterService.addChapterToSurveyEdition(surveyId, chapterRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponseDTO.success(savedChapter));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<ChapterRequestDTO>>> getChapters(@PathVariable Long surveyId) {
-        List<ChapterRequestDTO> chapters = chapterService.getChaptersBySurveyId(surveyId);
+    public ResponseEntity<ApiResponseDTO<List<ChapterRequestDTO>>> getChapters(@PathVariable Long surveyEditionId) {
+        List<ChapterRequestDTO> chapters = chapterService.getChaptersBySurveyEditionId(surveyEditionId);
         return ResponseEntity.ok(ApiResponseDTO.success(chapters));
     }
 
