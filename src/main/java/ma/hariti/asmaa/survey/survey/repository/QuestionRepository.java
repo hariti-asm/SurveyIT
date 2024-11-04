@@ -13,4 +13,5 @@ public interface QuestionRepository  extends JpaRepository<Question, Long> {
     List<Question> findByChapterId(Long chapterId);
     Page<Question> findBySubChapterId(Long subChapterId, Pageable pageable);
 
+
 }
