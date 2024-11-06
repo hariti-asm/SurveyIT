@@ -5,12 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import ma.hariti.asmaa.survey.survey.entity.Owner;
+import ma.hariti.asmaa.survey.survey.util.BaseDTO;
 import ma.hariti.asmaa.survey.survey.validation.annotation.Exists;
 
-import java.time.LocalDate;
-
 @Data
-public class CreateSurveyRequestDTO {
+public class CreateSurveyRequestDTO extends BaseDTO {
     @NotBlank(message = "Title is required")
     private String title;
 

@@ -2,7 +2,6 @@ package ma.hariti.asmaa.survey.survey.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyResponseDTO;
@@ -12,88 +11,94 @@ import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 @Transactional
-@RequiredArgsConstructor
-public class SurveyService {
-    private final SurveyRepository surveyRepository;
+public class SurveyService extends AbstractGenericService<Survey, Long, CreateSurveyRequestDTO, UpdateSurveyRequestDTO, UpdateSurveyResponseDTO> {
     private final OwnerRepository ownerRepository;
+    private final SurveyRepository surveyRepository;
     private final SurveyMapper surveyMapper;
     private final ChapterMapper chapterMapper;
 
-    public CreateSurveyRequestDTO createSurvey(CreateSurveyRequestDTO createSurveyRequestDTO) {
-
-        Survey survey = surveyMapper.toEntity(createSurveyRequestDTO);
-        setOwnerForSurvey(survey, createSurveyRequestDTO.getOwnerId());
-        Survey savedSurvey = surveyRepository.save(survey);
-        return surveyMapper.toDto(savedSurvey);
+    public SurveyService(
+            SurveyRepository surveyRepository,
+            OwnerRepository ownerRepository, SurveyRepository surveyRepository1,
+            SurveyMapper surveyMapper,
+            ChapterMapper chapterMapper
+    ) {
+        super(surveyRepository);
+        this.ownerRepository = ownerRepository;
+        this.surveyRepository = surveyRepository1;
+        this.surveyMapper = surveyMapper;
+        this.chapterMapper = chapterMapper;
     }
 
-    private void setOwnerForSurvey(Survey survey, Long ownerId) {
-        Owner owner = findAndValidateOwner(ownerId);
-        survey.setOwner(owner);
+    @Override
+    protected CreateSurveyRequestDTO mapToCreateDto(Survey entity) {
+        return surveyMapper.toDto(entity);
     }
 
-    public CreateSurveyRequestDTO getSurveyById(Long id) {
-        Survey survey = findSurveyOrThrow(id);
-        return surveyMapper.toDto(survey);
+    @Override
+    protected Survey mapToEntity(CreateSurveyRequestDTO createDto) {
+        // Validate before mapping
+        validateSurveyCreation(createDto);
+
+        Survey survey = surveyMapper.toEntity(createDto);
+        setOwnerForSurvey(survey, createDto.getOwnerId());
+        return survey;
     }
 
-    @Transactional()
-    public Page<CreateSurveyRequestDTO> getAllSurveys(Pageable pageable) {
-        Page<Survey> surveyPage = surveyRepository.findAll(pageable);
-
-        return surveyPage.map(survey -> {
-            CreateSurveyRequestDTO dto = new CreateSurveyRequestDTO();
-            BeanUtils.copyProperties(survey, dto);
-            return dto;
-        });
+    @Override
+    protected void mapToEntity(UpdateSurveyRequestDTO updateDto, Survey entity) {
+        validateSurveyUpdate(updateDto, entity.getId());
+        surveyMapper.updateEntityFromUpdateDto(updateDto, entity);
     }
 
-    private void validateSurveyTitle(String title, Long excludeId) {
-        surveyRepository.findByTitle(title)
+    @Override
+    protected UpdateSurveyResponseDTO mapToResponseDto(Survey entity) {
+        return surveyMapper.toUpdateResponseDto(entity);
+    }
+
+    private void validateSurveyCreation(CreateSurveyRequestDTO createDto) {
+        validateSurveyTitle(createDto.getTitle(), null);
+        validateOwnerExists(createDto.getOwnerId());
+    }
+
+    private void validateSurveyUpdate(UpdateSurveyRequestDTO updateDto, Long surveyId) {
+        validateSurveyTitle(updateDto.getTitle(), surveyId);
+    }
+
+    protected void validateSurveyTitle(String title, Long excludeId) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalStateException("Survey title cannot be empty");
+        }
+
+        ((SurveyRepository) repository).findByTitle(title.trim())
                 .ifPresent(existingSurvey -> {
-                    if (!existingSurvey.getId().equals(excludeId)) {
+                    if (excludeId == null || !existingSurvey.getId().equals(excludeId)) {
                         throw new IllegalStateException("Survey with title '" + title + "' already exists");
                     }
                 });
     }
 
+    private void validateOwnerExists(Long ownerId) {
+        if (ownerId == null) {
+            throw new IllegalStateException("Owner ID is required");
+        }
 
-    private Owner findAndValidateOwner(Long ownerId) {
-        return ownerRepository.findById(ownerId)
+        if (!ownerRepository.existsById(ownerId)) {
+            throw new EntityNotFoundException("Owner not found with id: " + ownerId);
+        }
+    }
+
+    private void setOwnerForSurvey(Survey survey, Long ownerId) {
+        Owner owner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new EntityNotFoundException("Owner not found with id: " + ownerId));
+        survey.setOwner(owner);
     }
-    private Survey findSurveyOrThrow(Long id) {
-        return surveyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Survey not found with id: " + id));
-    }
-    public UpdateSurveyResponseDTO updateSurvey(Long id, UpdateSurveyRequestDTO updateSurveyRequestDTO) {
-        Survey existingSurvey = findSurveyOrThrow(id);
-
-        if (!id.equals(updateSurveyRequestDTO.getId())) {
-            throw new IllegalArgumentException("Path ID and request body ID must match");
-        }
-
-        if (!existingSurvey.getTitle().equals(updateSurveyRequestDTO.getTitle())) {
-            validateSurveyTitle(updateSurveyRequestDTO.getTitle(), id);
-        }
-
-        surveyMapper.updateEntityFromUpdateDto(updateSurveyRequestDTO, existingSurvey);
-
-        Survey updatedSurvey = surveyRepository.save(existingSurvey);
-
-        return surveyMapper.toUpdateResponseDto(updatedSurvey);
-    }
-
-
 
 }

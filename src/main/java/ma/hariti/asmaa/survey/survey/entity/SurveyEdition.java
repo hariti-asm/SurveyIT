@@ -2,14 +2,14 @@ package ma.hariti.asmaa.survey.survey.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ma.hariti.asmaa.survey.survey.util.BaseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
-public class SurveyEdition {
-    @Id
+public class SurveyEdition extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

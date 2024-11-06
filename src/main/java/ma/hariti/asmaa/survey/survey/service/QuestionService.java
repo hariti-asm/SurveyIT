@@ -2,89 +2,99 @@ package ma.hariti.asmaa.survey.survey.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.question.QuestionDTO;
 import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.mapper.QuestionMapper;
-import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
+import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
+import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
-@RequiredArgsConstructor
-public class QuestionService {
+public class QuestionService extends AbstractGenericService<Question, Long, QuestionDTO, QuestionDTO, QuestionDTO> {
+
     private final ChapterService chapterService;
     private final QuestionRepository questionRepository;
-    private final ChapterRepository chapterRepository;  // Added ChapterRepository
+    private final ChapterRepository chapterRepository;
     private final QuestionMapper questionMapper;
 
+    public QuestionService(
+            QuestionRepository questionRepository,
+            ChapterService chapterService,
+            ChapterRepository chapterRepository,
+            QuestionMapper questionMapper
+    ) {
+        super(questionRepository);
+        this.questionRepository = questionRepository;
+        this.chapterService = chapterService;
+        this.chapterRepository = chapterRepository;
+        this.questionMapper = questionMapper;
+    }
+
+    @Override
+    protected QuestionDTO mapToCreateDto(Question entity) {
+        return questionMapper.toDTO(entity);
+    }
+
+    @Override
+    protected Question mapToEntity(QuestionDTO createDto) {
+        return questionMapper.toEntity(createDto);
+    }
+
+    @Override
+    protected void mapToEntity(QuestionDTO updateDto, Question entity) {
+        questionMapper.updateQuestionFromDTO(updateDto, entity);
+    }
+
+    @Override
+    protected QuestionDTO mapToResponseDto(Question entity) {
+        return questionMapper.toDTO(entity);
+    }
+
     public QuestionDTO addQuestionToSubChapter(Long subChapterId, QuestionDTO questionDTO) {
-        // Find the subchapter
         Chapter subChapter = chapterService.findById(subChapterId)
                 .orElseThrow(() -> new EntityNotFoundException("Subchapter not found with id: " + subChapterId));
 
-        // Ensure it's a subchapter (has a parent)
         if (subChapter.getParentChapter() == null) {
             throw new IllegalArgumentException("Chapter with id: " + subChapterId + " is not a subchapter");
         }
 
-        Question question = questionMapper.toEntity(questionDTO);
-
+        Question question = mapToEntity(questionDTO);
         question.setSubChapter(subChapter);
         subChapter.getQuestions().add(question);
 
         Question savedQuestion = questionRepository.save(question);
-
         chapterRepository.save(subChapter);
 
-        return questionMapper.toDTO(savedQuestion);
-    }
-
-    public List<QuestionDTO> getQuestionsForSubChapter(Long subChapterId) {
-        Chapter subChapter = chapterService.findById(subChapterId)
-                .orElseThrow(() -> new EntityNotFoundException("Subchapter not found with id: " + subChapterId));
-
-        if (subChapter.getParentChapter() == null) {
-            throw new IllegalArgumentException("Chapter with id: " + subChapterId + " is not a subchapter");
-        }
-
-        return subChapter.getQuestions().stream()
-                .map(questionMapper::toDTO)
-                .collect(Collectors.toList());
+        return mapToResponseDto(savedQuestion);
     }
 
     public QuestionDTO updateQuestion(Long subChapterId, Long questionId, QuestionDTO questionDTO) {
         Chapter subChapter = chapterService.findById(subChapterId)
                 .orElseThrow(() -> new EntityNotFoundException("Subchapter not found with id: " + subChapterId));
 
-        Question existingQuestion = questionRepository.findById(questionId)
-                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
+        Question existingQuestion = findOrThrow(questionId);
 
-        // Verify the question belongs to this subchapter
         if (!existingQuestion.getSubChapter().getId().equals(subChapterId)) {
             throw new IllegalArgumentException("Question does not belong to this subchapter");
         }
 
-        questionMapper.updateQuestionFromDTO(questionDTO, existingQuestion);
+        mapToEntity(questionDTO, existingQuestion);
         existingQuestion.setSubChapter(subChapter);
 
         Question savedQuestion = questionRepository.save(existingQuestion);
-        return questionMapper.toDTO(savedQuestion);
+        return mapToResponseDto(savedQuestion);
     }
 
     public void deleteQuestion(Long subChapterId, Long questionId) {
         Chapter subChapter = chapterService.findById(subChapterId)
                 .orElseThrow(() -> new EntityNotFoundException("Subchapter not found with id: " + subChapterId));
 
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
+        Question question = findOrThrow(questionId);
 
         if (!question.getSubChapter().getId().equals(subChapterId)) {
             throw new IllegalArgumentException("Question does not belong to this subchapter");
@@ -92,8 +102,9 @@ public class QuestionService {
 
         subChapter.getQuestions().remove(question);
         chapterRepository.save(subChapter);
-        questionRepository.delete(question);
+        delete(questionId);
     }
+
     public Page<QuestionDTO> getQuestionsForSubChapter(Long subChapterId, int page, int size) {
         Page<Question> questionsPage = questionRepository.findBySubChapterId(subChapterId, PageRequest.of(page, size));
 
@@ -108,10 +119,5 @@ public class QuestionService {
             dto.setRequired(question.getRequired());
             return dto;
         });
-    }
-    public QuestionDTO getQuestionById(Long questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
-        return questionMapper.toDTO(question);
     }
 }

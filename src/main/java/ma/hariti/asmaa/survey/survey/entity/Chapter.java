@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ma.hariti.asmaa.survey.survey.util.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Table(name = "chapters")
-public class Chapter {
+public class Chapter extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +25,7 @@ public class Chapter {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_edition_id", nullable = false)
-    private SurveyEdition surveyEdition; // This is correct
+    private SurveyEdition surveyEdition;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_chapter_id")
@@ -35,7 +36,7 @@ public class Chapter {
     private List<Chapter> subChapters = new ArrayList<>();
 
     @OneToMany(
-            mappedBy = "chapter", // Ensure this refers to the correct property in Question entity
+            mappedBy = "chapter",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )

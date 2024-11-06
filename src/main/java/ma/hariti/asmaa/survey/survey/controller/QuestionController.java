@@ -4,17 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.hariti.asmaa.survey.survey.dto.api.ApiResponseDTO;
 import ma.hariti.asmaa.survey.survey.dto.question.QuestionDTO;
-import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.service.QuestionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/surveys/{surveyId}/chapters/{chapterId}/subchapters") // Updated path
+@RequestMapping("/surveys/{surveyId}/chapters/{chapterId}/subchapters")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
@@ -51,7 +48,7 @@ public class QuestionController {
 
     @DeleteMapping("/{subChapterId}/questions/{questionId}")
     public ResponseEntity<ApiResponseDTO<Void>> deleteQuestion(
-            @PathVariable Long surveyId, // Added surveyId and chapterId
+            @PathVariable Long surveyId,
             @PathVariable Long chapterId,
             @PathVariable Long subChapterId,
             @PathVariable Long questionId) {

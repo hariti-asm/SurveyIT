@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SurveyResultsService {
+public class SurveyResultsService implements ISurveyResultsService {
     private final SurveyRepository surveyRepository;
 
     public SurveyResultsDTO getSurveyResults(Long surveyId) {
@@ -41,7 +41,7 @@ public class SurveyResultsService {
         return resultsDTO;
     }
 
-    private List<ChapterResultDTO> processChapters(List<Chapter> chapters) {
+    public List<ChapterResultDTO> processChapters(List<Chapter> chapters) {
         return chapters.stream()
                 .filter(chapter -> chapter.getParentChapter() == null)
                 .map(this::processChapter)

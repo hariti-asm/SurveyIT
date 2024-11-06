@@ -10,7 +10,7 @@ public class ApiResponseDTO<T> {
     private final boolean success;
     private final T data;
     private final String error;
-    private final int totalElements;
+    private final int status;
 
     public static <T> ApiResponseDTO<T> success(T data, int totalElements) {
         return new ApiResponseDTO<>(true, data, null, totalElements);
@@ -20,11 +20,11 @@ public class ApiResponseDTO<T> {
         return new ApiResponseDTO<>(true, data, null, 0);
     }
 
-    public static <T> ApiResponseDTO<T> error(String error, int status) {
-        return new ApiResponseDTO<>(false, null, error, status);
+    public static <T> ApiResponseDTO<T> error(String message, int status) {
+        return new ApiResponseDTO<>(false, null, message, status);
     }
 
-    public static <T> ApiResponseDTO<T> error(String error, T data, int status) {
-        return new ApiResponseDTO<>(false, data, error, status);
+    public static <T> ApiResponseDTO<T> error(String message, T data, int status) {
+        return new ApiResponseDTO<>(false, data, message, status);
     }
 }
