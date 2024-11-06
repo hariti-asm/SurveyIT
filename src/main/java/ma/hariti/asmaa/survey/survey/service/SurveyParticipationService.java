@@ -14,12 +14,16 @@ import ma.hariti.asmaa.survey.survey.repository.AnswerRepository;
 import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class SurveyParticipationService implements ISurveyParticipationService {
+    private static final Logger log = LoggerFactory.getLogger(SurveyParticipationService.class);
     private final SurveyRepository surveyRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
@@ -41,7 +45,7 @@ public class SurveyParticipationService implements ISurveyParticipationService {
         }
     }
 
-    private void processAnswerId(String answerId) {
+    public void processAnswerId(String answerId) {
         if (answerId.contains("-")) {
             String[] answerIds = answerId.split("-");
             for (String id : answerIds) {
@@ -52,22 +56,24 @@ public class SurveyParticipationService implements ISurveyParticipationService {
         }
     }
 
-    private void processMultipleAnswers(List<AnswerResponseDTO> answers) {
+    public void processMultipleAnswers(List<AnswerResponseDTO> answers) {
         for (AnswerResponseDTO answer : answers) {
             incrementAnswerCount(answer.getId());
         }
     }
 
-    private void incrementAnswerCount(Long answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
-
-        if (answer.getSelectionCount() == null) {
-            answer.setSelectionCount(1);
-        } else {
+    public void incrementAnswerCount(Long answerId) {
+        log.info("Incrementing answer count for answer ID: {}", answerId);
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        if (answerOptional.isPresent()) {
+            Answer answer = answerOptional.get();
+            log.info("Found answer: {}", answer);
             answer.setSelectionCount(answer.getSelectionCount() + 1);
+            answerRepository.save(answer);
+            log.info("Answer count incremented: {}", answer);
+        } else {
+            log.error("Answer not found with ID: {}", answerId);
+            throw new EntityNotFoundException("Answer not found with ID: " + answerId);
         }
-
-        answerRepository.save(answer);
     }
 }
