@@ -9,6 +9,7 @@ import ma.hariti.asmaa.survey.survey.dto.question.QuestionResponseDTO;
 import ma.hariti.asmaa.survey.survey.entity.Answer;
 import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
+import ma.hariti.asmaa.survey.survey.implementation.ISurveyParticipationService;
 import ma.hariti.asmaa.survey.survey.repository.AnswerRepository;
 import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
