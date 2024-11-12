@@ -22,11 +22,14 @@ public class ExistsValidator implements ConstraintValidator<Exists, Long> {
     @Override
     public boolean isValid(Long id, ConstraintValidatorContext context) {
         if (id == null) return true;
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<?> query = cb.createQuery(entity);
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<?> root = query.from(entity);
-        query.select(root.get("id"))
+        query.select(cb.count(root))
                 .where(cb.equal(root.get("id"), id));
-        return !entityManager.createQuery(query).setMaxResults(1).getResultList().isEmpty();
+
+        return entityManager.createQuery(query)
+                .getSingleResult() > 0;
     }
 }

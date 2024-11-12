@@ -13,9 +13,10 @@ import ma.hariti.asmaa.survey.survey.implementation.ISurveyParticipationService;
 import ma.hariti.asmaa.survey.survey.repository.AnswerRepository;
 import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -65,12 +66,28 @@ public class SurveyParticipationService implements ISurveyParticipationService {
     public void incrementAnswerCount(Long answerId) {
         log.info("Incrementing answer count for answer ID: {}", answerId);
         Optional<Answer> answerOptional = answerRepository.findById(answerId);
+
         if (answerOptional.isPresent()) {
             Answer answer = answerOptional.get();
             log.info("Found answer: {}", answer);
+
             answer.setSelectionCount(answer.getSelectionCount() + 1);
             answerRepository.save(answer);
-            log.info("Answer count incremented: {}", answer);
+            log.info("Answer selection count incremented: {}", answer);
+            Long questionId = answer.getQuestion().getId();
+
+            Question question = questionRepository.findById(questionId)
+                    .orElseThrow(() -> new EntityNotFoundException("Question not found with ID: " + questionId));
+
+            long totalSelectionCount = question.getAnswers()
+                    .stream()
+                    .mapToLong(Answer::getSelectionCount)
+                    .sum();
+
+            question.setAnswerCount(Math.toIntExact(totalSelectionCount));
+            questionRepository.save(question);
+            log.info("Question answer count updated to: {}", totalSelectionCount);
+
         } else {
             log.error("Answer not found with ID: {}", answerId);
             throw new EntityNotFoundException("Answer not found with ID: " + answerId);
