@@ -49,8 +49,8 @@ The platform employs a monolithic architecture built with Spring Boot, featuring
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/state-of-dev.git
-cd state-of-dev
+git clone https://github.com/hariti-asm/SurveyIT/
+cd SurveyIT
 ```
 
 2. Build the application:
