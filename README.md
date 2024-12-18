@@ -102,7 +102,7 @@ state-of-dev/
 └── pom.xml
 ```
 
-## 🌈 Caching Configuration
+##  Caching Configuration
 
 State of Dev uses Redis for caching:
 
@@ -111,8 +111,51 @@ State of Dev uses Redis for caching:
 - Active survey editions
 - Frequently accessed subjects
 - Answer statistics
+## ⚠️ Hosting with Docker 🚢
 
-## 👩‍💻 Author
+You can containerize and host the **State of Dev** application using Docker. Follow the steps below:
 
-Built with ❤️ by Hariti Asmaa 🚀
+### 🔧 Steps to Host
 
+1. **Build the Docker Image**  
+   This command builds a Docker image using the `Dockerfile` in your project.
+
+   ```bash
+   docker build -t haritiasmae/survey .
+   ```
+
+2. **Login to Docker Hub**  
+   To push your Docker image to Docker Hub, you need to authenticate.
+
+   ```bash
+   docker login --username <your-username>
+   ```
+   This command logs you into Docker Hub, allowing you to push your images. You will be prompted to enter your access token for secure authentication.
+
+3. **Push the Docker Image**  
+   Once the image is built, you can upload it to Docker Hub.
+
+   ```bash
+   docker push haritiasmae/survey
+   ```
+   This command pushes your local Docker image to your repository on Docker Hub, making it available for others to pull and use.
+
+---
+
+### 🎯 Result
+
+Your application is now hosted on Docker Hub and can be pulled and run on any machine using the following commands:
+
+```bash
+docker pull haritiasmae/survey
+docker run -p 8080:8080 haritiasmae/survey
+```
+
+- **`docker pull`**: Downloads the image from Docker Hub.
+- **`docker run`**: Starts a container from the image and maps port `8080` on the container to port `8080` on the host machine, allowing the application to be accessed locally.
+
+---
+
+## 👩‍💼 Author
+
+Built with ❤️ by **Hariti Asmaa** 🚀
