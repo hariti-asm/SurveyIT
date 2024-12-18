@@ -9,23 +9,31 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import ma.hariti.asmaa.survey.survey.dto.api.ApiResponseDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
+import ma.hariti.asmaa.survey.survey.dto.survey.SurveyEditionWithQuestionCountDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyResponseDTO;
+import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
+import ma.hariti.asmaa.survey.survey.mapper.SurveyEditionMapper;
 import ma.hariti.asmaa.survey.survey.service.SurveyService;
 import ma.hariti.asmaa.survey.survey.util.AbstractCrudController;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/surveys")
 @Tag(name = "Surveys", description = "Manage surveys")
 public class SurveyController extends AbstractCrudController<CreateSurveyRequestDTO, UpdateSurveyRequestDTO, UpdateSurveyResponseDTO> {
     private final SurveyService surveyService;
+    private final SurveyEditionMapper surveyEditionMapper;
 
-    public SurveyController(SurveyService surveyService) {
+    public SurveyController(SurveyService surveyService, SurveyEditionMapper surveyEditionMapper) {
         super(surveyService);
         this.surveyService = surveyService;
+        this.surveyEditionMapper = surveyEditionMapper;
     }
 
     @Override
@@ -79,4 +87,22 @@ public class SurveyController extends AbstractCrudController<CreateSurveyRequest
     public ResponseEntity<CreateSurveyRequestDTO> getById(@PathVariable Long id) {
         return super.getById(id);
     }
+
+    @GetMapping("/{surveyId}/editions")
+    public ResponseEntity<List<SurveyEditionWithQuestionCountDTO>> getSurveyEditions(@PathVariable Long surveyId) {
+        List<SurveyEdition> surveyEditions = surveyService.getSurveyEditionsBySurveyId(surveyId);
+
+        List<SurveyEditionWithQuestionCountDTO> surveyEditionDTOs = surveyEditions.stream()
+                .map(edition -> {
+                    SurveyEditionWithQuestionCountDTO dto = new SurveyEditionWithQuestionCountDTO();
+                    dto.setId(edition.getId());
+                    dto.setYear(edition.getYear());
+                    dto.setQuestionCount(surveyService.getQuestionCountBySurveyEditionId(edition.getId()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(surveyEditionDTOs);
+    }
+
 }

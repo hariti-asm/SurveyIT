@@ -5,15 +5,21 @@ import jakarta.transaction.Transactional;
 import ma.hariti.asmaa.survey.survey.dto.survey.CreateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyRequestDTO;
 import ma.hariti.asmaa.survey.survey.dto.survey.UpdateSurveyResponseDTO;
+import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Owner;
 import ma.hariti.asmaa.survey.survey.entity.Survey;
+import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.mapper.SurveyMapper;
+import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
 import ma.hariti.asmaa.survey.survey.repository.OwnerRepository;
+import ma.hariti.asmaa.survey.survey.repository.SurveyEditionRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
 import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Service
 @Validated
@@ -23,18 +29,21 @@ public class SurveyService extends AbstractGenericService<Survey, Long, CreateSu
     private final SurveyRepository surveyRepository;
     private final SurveyMapper surveyMapper;
     private final ChapterMapper chapterMapper;
-
+    private final SurveyEditionRepository surveyEditionRepository;
+    private final ChapterRepository chapterRepository;
     public SurveyService(
             SurveyRepository surveyRepository,
             OwnerRepository ownerRepository, SurveyRepository surveyRepository1,
             SurveyMapper surveyMapper,
-            ChapterMapper chapterMapper
+            ChapterMapper chapterMapper, SurveyEditionRepository surveyEditionRepository, ChapterRepository chapterRepository
     ) {
         super(surveyRepository);
         this.ownerRepository = ownerRepository;
         this.surveyRepository = surveyRepository1;
         this.surveyMapper = surveyMapper;
         this.chapterMapper = chapterMapper;
+        this.surveyEditionRepository = surveyEditionRepository;
+        this.chapterRepository = chapterRepository;
     }
 
     @Override
@@ -44,7 +53,6 @@ public class SurveyService extends AbstractGenericService<Survey, Long, CreateSu
 
     @Override
     protected Survey mapToEntity(CreateSurveyRequestDTO createDto) {
-        // Validate before mapping
         validateSurveyCreation(createDto);
 
         Survey survey = surveyMapper.toEntity(createDto);
@@ -101,4 +109,16 @@ public class SurveyService extends AbstractGenericService<Survey, Long, CreateSu
         survey.setOwner(owner);
     }
 
+    public List<SurveyEdition> getSurveyEditionsBySurveyId(Long surveyId) {
+        return surveyEditionRepository.findBySurveyId(surveyId);
+    }
+
+    public int getQuestionCountBySurveyEditionId(Long surveyEditionId) {
+        int totalQuestions = 0;
+        List<Chapter> chapters = chapterRepository.findBySurveyEditionId(surveyEditionId);
+        for (Chapter chapter : chapters) {
+            totalQuestions += chapter.getQuestions().size();
+        }
+        return totalQuestions;
+    }
 }

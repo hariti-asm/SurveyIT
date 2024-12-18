@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", uses = {ChapterMapper.class, SurveyMapper.class})
 public interface SurveyEditionMapper {
+
     @Mapping(target = "surveyId", source = "survey.id")
     SurveyEditionResponseDTO toDto(SurveyEdition surveyEdition);
 
@@ -19,4 +20,5 @@ public interface SurveyEditionMapper {
 
     @Mapping(target = "survey.id", source = "surveyId")
     void updateEntityFromUpdateDto(UpdateSurveyEditionRequestDTO updateDto, @MappingTarget SurveyEdition entity);
+
 }

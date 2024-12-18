@@ -10,9 +10,9 @@ import java.util.List;
 @Entity
 @Data
 public class SurveyEdition extends BaseEntity {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private LocalDate creationDate;
     private LocalDate startDate;
     private Integer year;
@@ -23,4 +23,6 @@ public class SurveyEdition extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id")
     private Survey survey;
+
+
 }

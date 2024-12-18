@@ -7,90 +7,120 @@ import ma.hariti.asmaa.survey.survey.dto.answer.AnswerResponseDTO;
 import ma.hariti.asmaa.survey.survey.dto.participant.SurveyParticipationDTO;
 import ma.hariti.asmaa.survey.survey.dto.question.QuestionResponseDTO;
 import ma.hariti.asmaa.survey.survey.entity.Answer;
+import ma.hariti.asmaa.survey.survey.entity.Chapter;
 import ma.hariti.asmaa.survey.survey.entity.Question;
-import ma.hariti.asmaa.survey.survey.entity.Survey;
+import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.implementation.ISurveyParticipationService;
 import ma.hariti.asmaa.survey.survey.repository.AnswerRepository;
+import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
 import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
-import ma.hariti.asmaa.survey.survey.repository.SurveyRepository;
+import ma.hariti.asmaa.survey.survey.repository.SurveyEditionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class SurveyParticipationService implements ISurveyParticipationService {
     private static final Logger log = LoggerFactory.getLogger(SurveyParticipationService.class);
-    private final SurveyRepository surveyRepository;
+    private final SurveyEditionRepository surveyEditionRepository;
+    private final ChapterRepository chapterRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
 
     @Override
-    public void saveParticipationResponses(Long surveyId, SurveyParticipationDTO participationDTO) {
-        Survey survey = surveyRepository.findById(surveyId)
-                .orElseThrow(() -> new EntityNotFoundException("Survey not found"));
+    @Transactional
+    public void saveParticipationResponses(Long surveyEditionId, SurveyParticipationDTO participationDTO) {
+        SurveyEdition surveyEdition = surveyEditionRepository.findById(surveyEditionId)
+                .orElseThrow(() -> new EntityNotFoundException("Survey Edition not found with ID: " + surveyEditionId));
+
+        log.info("Processing participation for Survey Edition ID: {}", surveyEditionId);
 
         for (QuestionResponseDTO responseDTO : participationDTO.getResponses()) {
-            Question question = questionRepository.findById(responseDTO.getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Question not found"));
+            processQuestionResponse(surveyEditionId, responseDTO);
+        }
 
+        // Flush changes to ensure they are committed
+        surveyEditionRepository.flush();
+    }
+
+    @Transactional
+    protected void processQuestionResponse(Long surveyEditionId, QuestionResponseDTO responseDTO) {
+        Question question = questionRepository.findById(responseDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with ID: " + responseDTO.getId()));
+
+        Chapter chapter = chapterRepository.findById(question.getChapter().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Chapter not found for Question ID: " + question.getId()));
+
+        // Verify the question's chapter belongs to this survey edition
+        if (!chapter.getSurveyEdition().getId().equals(surveyEditionId)) {
+            throw new IllegalArgumentException(
+                    "Question ID " + question.getId() + " belongs to Chapter " + chapter.getId() +
+                            " which is not part of Survey Edition " + surveyEditionId
+            );
+        }
+
+        try {
             if (responseDTO.getAnswerId() != null) {
                 processAnswerId(responseDTO.getAnswerId());
             } else if (responseDTO.getAnswers() != null && !responseDTO.getAnswers().isEmpty()) {
                 processMultipleAnswers(responseDTO.getAnswers());
             }
+
+            // Flush changes for this question
+            questionRepository.flush();
+            answerRepository.flush();
+        } catch (Exception e) {
+            log.error("Error processing response for question ID {}: {}", responseDTO.getId(), e.getMessage());
+            throw e;
         }
     }
 
+    @Transactional
     public void processAnswerId(String answerId) {
         if (answerId.contains("-")) {
             String[] answerIds = answerId.split("-");
             for (String id : answerIds) {
-                incrementAnswerCount(Long.parseLong(id));
+                incrementAnswerCount(Long.parseLong(id.trim()));
             }
         } else {
-            incrementAnswerCount(Long.parseLong(answerId));
+            incrementAnswerCount(Long.parseLong(answerId.trim()));
         }
     }
 
+    @Transactional
     public void processMultipleAnswers(List<AnswerResponseDTO> answers) {
         for (AnswerResponseDTO answer : answers) {
             incrementAnswerCount(answer.getId());
         }
     }
 
+    @Transactional
     public void incrementAnswerCount(Long answerId) {
         log.info("Incrementing answer count for answer ID: {}", answerId);
-        Optional<Answer> answerOptional = answerRepository.findById(answerId);
 
-        if (answerOptional.isPresent()) {
-            Answer answer = answerOptional.get();
-            log.info("Found answer: {}", answer);
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new EntityNotFoundException("Answer not found with ID: " + answerId));
 
-            answer.setSelectionCount(answer.getSelectionCount() + 1);
-            answerRepository.save(answer);
-            log.info("Answer selection count incremented: {}", answer);
-            Long questionId = answer.getQuestion().getId();
+        log.info("Before increment, selection count: {}", answer.getSelectionCount());
+        answer.setSelectionCount(answer.getSelectionCount() + 1);
+        answerRepository.saveAndFlush(answer);
+        log.info("After increment, selection count: {}", answer.getSelectionCount());
 
-            Question question = questionRepository.findById(questionId)
-                    .orElseThrow(() -> new EntityNotFoundException("Question not found with ID: " + questionId));
+        Question question = questionRepository.findById(answer.getQuestion().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Question not found for Answer ID: " + answerId));
 
-            long totalSelectionCount = question.getAnswers()
-                    .stream()
-                    .mapToLong(Answer::getSelectionCount)
-                    .sum();
+        long totalSelectionCount = answerRepository.findByQuestionId(question.getId())
+                .stream()
+                .mapToLong(Answer::getSelectionCount)
+                .sum();
 
-            question.setAnswerCount(Math.toIntExact(totalSelectionCount));
-            questionRepository.save(question);
-            log.info("Question answer count updated to: {}", totalSelectionCount);
-
-        } else {
-            log.error("Answer not found with ID: {}", answerId);
-            throw new EntityNotFoundException("Answer not found with ID: " + answerId);
-        }
+        log.info("Total selection count for question ID {}: {}", question.getId(), totalSelectionCount);
+        question.setAnswerCount(Math.toIntExact(totalSelectionCount));
+        questionRepository.saveAndFlush(question);
+        log.info("Updated question answer count: {}", question.getAnswerCount());
     }
+
 }

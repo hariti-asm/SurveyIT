@@ -1,6 +1,0 @@
-===========Make your Api Communicate Well
-GlobalExceptionHandler : it catch exceptions and translate them to api readble response
-
-====== solving tricky JSON infinite recursion issue with JPA relationships by using JsonManagedReference
-  @JsonManagedReference  : parent (list of child)
-  @JsonBackReference : child (one parent)
