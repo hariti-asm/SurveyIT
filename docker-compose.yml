@@ -1,6 +1,7 @@
-
 networks:
   app-network:
+    driver: bridge
+  sonarqube-network:
     driver: bridge
 
 volumes:
@@ -8,8 +9,28 @@ volumes:
     driver: local
   jenkins-data:
     driver: local
+  sonarqube_data:
+    driver: local
+  sonarqube_extensions:
+    driver: local
+  sonarqube_logs:
+    driver: local
 
 services:
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    networks:
+      - sonarqube-network
+
   postgres:
     image: postgres:13
     environment:

@@ -1,16 +1,24 @@
+
 # State of Dev 📊🔍
 
 A professional survey platform tailored for the IT industry 💻🌐
 
+---
+
 ## 🌟 Overview
 
-Inspired by the StackOverflow Developer Survey, State of Dev is a robust platform designed to collect insights from the IT community. Built with Spring Boot and a monolithic architecture, it offers efficient survey management with hierarchical structures, diverse question types, and real-time answer statistics tracking.
+Inspired by the StackOverflow Developer Survey, **State of Dev** is a robust platform designed to collect insights from the IT community. Built with **Spring Boot** and a **monolithic architecture**, it offers efficient survey management with hierarchical structures, diverse question types, and real-time answer statistics tracking.
+
+---
 
 ## 🏗️ Architecture
 
-The platform employs a monolithic architecture built with Spring Boot, featuring two bounded contexts:
-- 📋 Survey Management (Core)
-- 🔐 Identity and Access (Supporting)
+The platform employs a monolithic architecture built with **Spring Boot**, featuring two bounded contexts:
+
+- 📋 **Survey Management (Core)**
+- 🔐 **Identity and Access (Supporting)**
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -30,6 +38,8 @@ The platform employs a monolithic architecture built with Spring Boot, featuring
 - OpenAPI 3.0
 - Swagger UI
 
+---
+
 ## ✨ Key Features
 
 - 📊 Hierarchical survey structure
@@ -38,6 +48,8 @@ The platform employs a monolithic architecture built with Spring Boot, featuring
 - 📈 Answer statistics and analytics
 - 🔐 Secure owner authentication with role-based permissions
 - 🚀 Performance boost via Redis caching
+
+---
 
 ## 🚀 Getting Started
 
@@ -48,24 +60,27 @@ The platform employs a monolithic architecture built with Spring Boot, featuring
 ### 🔧 Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/hariti-asm/SurveyIT/
-cd SurveyIT
-```
-
+   ```bash
+   git clone https://github.com/username/SurveyIT/
+   cd SurveyIT
+   ```
 2. Build the application:
-```bash
-./mvnw clean install
-```
+   ```bash
+   ./mvnw clean install
+   ```
 
 3. Run the application:
-```bash
-./mvnw spring-boot:run
-```
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
-4. Access the application at: http://localhost:8080
+4. Access the application at: [http://localhost:8080](http://localhost:8080)
+
+---
 
 ## 🧪 Testing
+
+Run the tests using the following commands:
 
 ```bash
 # Run unit tests
@@ -75,18 +90,25 @@ cd SurveyIT
 ./mvnw verify -P integration-test
 ```
 
+---
+
 ## 📚 API Documentation
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- OpenAPI Documentation: Accessible via /v3/api-docs
+- Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- OpenAPI Documentation: Accessible via `/v3/api-docs`
+
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! 
+Contributions are welcome!
 
-1. Create an issue
-2. Submit a pull request
+1. Create an issue.
+2. Submit a pull request.
+
+---
 
 ## 📝 Project Structure
+
 ```
 state-of-dev/
 ├── src/
@@ -102,57 +124,66 @@ state-of-dev/
 └── pom.xml
 ```
 
-##  Caching Configuration
+---
 
-State of Dev uses Redis for caching:
+## Caching Configuration
 
-**Cached Data**:
+**State of Dev** uses Redis for caching the following data:
+
 - Survey templates
 - Active survey editions
 - Frequently accessed subjects
 - Answer statistics
+
+---
+## 🧪 Piple Line of the application
+
+![Description](/src/main/resources/static/assets/images/surveyItPipeLine.png)
+
 ## ⚠️ Hosting with Docker 🚢
 
-You can containerize and host the **State of Dev** application using Docker. Follow the steps below:
+You can containerize and host the **State of Dev** application using Docker.
 
 ### 🔧 Steps to Host
 
 1. **Build the Docker Image**  
-   This command builds a Docker image using the `Dockerfile` in your project.
-
+   This command builds a Docker image using the `Dockerfile` in your project:
    ```bash
-   docker build -t haritiasmae/survey .
+   docker build -t username/survey .
    ```
 
 2. **Login to Docker Hub**  
-   To push your Docker image to Docker Hub, you need to authenticate.
-
+   To push your Docker image to Docker Hub, authenticate using:
    ```bash
    docker login --username <your-username>
    ```
-   This command logs you into Docker Hub, allowing you to push your images. You will be prompted to enter your access token for secure authentication.
+   You will be prompted to enter your Docker access token for secure authentication.
 
 3. **Push the Docker Image**  
-   Once the image is built, you can upload it to Docker Hub.
-
+   Upload your image to Docker Hub using the following command:
    ```bash
-   docker push haritiasmae/survey
+   docker push username/survey
    ```
-   This command pushes your local Docker image to your repository on Docker Hub, making it available for others to pull and use.
+
+4. **Pull and Run the Docker Image**  
+   Any user can now pull and run your containerized application:
+   ```bash
+   docker pull username/survey
+   docker run -p 8080:8080 username/survey
+   ```
 
 ---
 
-### 🎯 Result
+## 🔎 Code Quality with SonarQube
 
-Your application is now hosted on Docker Hub and can be pulled and run on any machine using the following commands:
+**State of Dev** integrates **SonarQube** to analyze and maintain code quality.
 
+### Running SonarQube Analysis
+
+Ensure SonarQube is running locally or remotely. Then, execute the analysis using Maven:
 ```bash
-docker pull haritiasmae/survey
-docker run -p 8080:8080 haritiasmae/survey
+./mvnw sonar:sonar   -Dsonar.projectKey=stateofdev   -Dsonar.host.url=http://localhost:9000   -Dsonar.login=<your-sonar-token>
 ```
-
-- **`docker pull`**: Downloads the image from Docker Hub.
-- **`docker run`**: Starts a container from the image and maps port `8080` on the container to port `8080` on the host machine, allowing the application to be accessed locally.
 
 ---
 
