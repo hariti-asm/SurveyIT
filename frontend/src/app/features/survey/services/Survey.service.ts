@@ -6,8 +6,7 @@ import { Survey } from '../models/survey.model';
   providedIn: 'root'
 })
 export class SurveyService {
-  private readonly apiUrl = '/api/v1/surveys';
-
+  private readonly apiUrl = 'http://localhost:8082/surveys';
   constructor(private http: HttpClient) {}
    public getAllSurveys(): Observable<Survey[]> {
     return this.http.get<Survey[]>(this.apiUrl);
