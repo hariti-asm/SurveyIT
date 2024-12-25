@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
     this.loading = true;
     this.surveyService.getAllSurveys().subscribe({
       next: (surveys) => {
+        console.log('Received surveys:', surveys);
         this.surveys = surveys;
         this.loading = false;
         this.error = null;
