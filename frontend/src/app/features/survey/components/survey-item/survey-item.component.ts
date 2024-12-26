@@ -6,7 +6,7 @@ import {RouterOutlet} from '@angular/router';
 @Component({
   selector: 'app-survey-item',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule],
   templateUrl: './survey-item.component.html',
 })
 export class SurveyItemComponent {

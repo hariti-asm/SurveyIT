@@ -1,0 +1,35 @@
+.chapter-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  .chapter-header {
+    h3 {
+      margin: 0 0 12px 0;
+      color: #333;
+    }
+  }
+
+  .chapter-info {
+    color: #666;
+    margin-bottom: 12px;
+  }
+
+  .sub-chapters {
+    h4 {
+      font-size: 1em;
+      margin: 12px 0 8px;
+      color: #555;
+    }
+
+    .sub-chapter {
+      padding: 8px;
+      margin: 4px 0;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+  }
+}

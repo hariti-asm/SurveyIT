@@ -1,1 +1,11 @@
-<p>chapter-list works!</p>
+<div class="chapters-container">
+  @if (loading) {
+    <p>Loading chapters...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else {
+    @for (chapter of chapters; track chapter.id) {
+      <app-chapter-item [chapter]="chapter"/>
+    }
+  }
+</div>

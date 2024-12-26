@@ -1,27 +1,25 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Chapter } from '../../models/chapter.model';
-import { ChapterService } from '../../services/chapter.service';
-import { Subscription } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import {catchError, finalize, Subscription} from 'rxjs';
+import {Chapter} from '../../models/chapter.model';
+import {ChapterService} from '../../services/chapter.service';
+import {ApiResponseDTO} from '../../models/apiResponse.model';
+import {PaginatedResponse} from '../../../survey/models/pagination.model';
+import {ChapterItemComponent} from '../chapter-item/chapter-item.component';
 
-interface ChapterResponse {
-  success: boolean;
-  data: {
-    data: Chapter[];
-  };
-}
+
+
 
 @Component({
   selector: 'app-chapter-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChapterItemComponent],
   templateUrl: './chapter-list.component.html',
   styleUrl: './chapter-list.component.scss'
 })
 export class ChapterListComponent implements OnInit, OnDestroy {
-  chapters: Chapter[] = [];
+  chapters: any[] = [];
   loading = false;
   error: string | null = null;
 
@@ -56,13 +54,16 @@ export class ChapterListComponent implements OnInit, OnDestroy {
         this.loading = false;
       })
     ).subscribe({
-      next: (response: ChapterResponse) => {
+      next: (response: ApiResponseDTO<PaginatedResponse<Chapter>>) => {
         if (response?.success) {
-          this.chapters = response.data.data;
-          console.log("the incoming chapters are ", response.data.data);
+          this.chapters = response.data.data.content;
+          console.log("The incoming chapters are ", this.chapters);
         } else {
           this.error = 'Failed to load chapters';
         }
+      },
+      error: (error) => {
+        this.error = error.message || 'An error occurred while loading chapters';
       }
     });
   }

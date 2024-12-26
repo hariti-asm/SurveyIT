@@ -6,7 +6,7 @@
 
   <div class="editions-section">
     <h3>Survey Editions</h3>
-    @if (survey.surveyEditions?.length) {
+    @if (survey.surveyEditions.length) {
       <div class="editions-list">
         @for (edition of survey.surveyEditions; track edition.id) {
           <div class="edition-item">
