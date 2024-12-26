@@ -1,16 +1,50 @@
 <main class="main">
   <div class="content">
     <h1>My Surveys</h1>
-    <div class="surveys-container">
-      @if (surveys.length > 0) {
-        @for (survey of surveys; track survey.id) {
-          <app-survey-item [survey]="survey"></app-survey-item>
-        }
-      } @else {
-        <p>No surveys found.</p>
-      }
+
+    <!-- Loading state -->
+    <div *ngIf="loading" class="loading-state">
+      <p>Loading surveys...</p>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="error" class="error-state">
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Content when not loading and no error -->
+    <div class="surveys-container" *ngIf="!loading && !error">
+      <ng-container *ngIf="surveys.length > 0; else noSurveys">
+        <div class="survey-grid">
+          <div class="survey-item" *ngFor="let survey of surveys">
+            <app-survey-item [survey]="survey"></app-survey-item>
+
+            <!-- Survey Editions Section -->
+            <div class="editions-section" *ngIf="survey.surveyEditions && survey.surveyEditions.length > 0">
+              <h3>Editions</h3>
+              <ul class="edition-list">
+                <li *ngFor="let edition of survey.surveyEditions" class="edition-item">
+                  <span class="edition-year">{{ edition.year }}</span>
+
+                </li>
+              </ul>
+            </div>
+
+            <!-- No editions message -->
+            <p *ngIf="!survey.surveyEditions || survey.surveyEditions.length === 0" class="no-editions">
+              No editions available
+            </p>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noSurveys>
+        <div class="no-surveys">
+          <p>No surveys found.</p>
+        </div>
+      </ng-template>
     </div>
   </div>
 </main>
 
-<router-outlet />
+<router-outlet></router-outlet>

@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {Observable, catchError, tap, throwError, map} from 'rxjs';
+import {Observable, catchError, tap, throwError, map, forkJoin, mergeMap} from 'rxjs';
 import { Survey } from '../models/survey.model';
-import {PaginatedResponse} from '../models/pagination.model';
+import { PaginatedResponse } from '../models/pagination.model';
+import {SurveyEdition} from '../models/survey-edition.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,27 @@ export class SurveyService {
       map(response => response.data.content)
     );
   }
+
+  public getSurveyEditions(surveyId: number): Observable<SurveyEdition[]> {
+    return this.http.get<SurveyEdition[]>(`${this.apiUrl}/${surveyId}/editions`);
+  }
+
+  public getAllSurveysWithEditions(): Observable<Survey[]> {
+    return this.getAllSurveys().pipe(
+      mergeMap(surveys => {
+        const surveysWithEditions$ = surveys.map(survey =>
+          this.getSurveyEditions(survey.id).pipe(
+            map(editions => ({
+              ...survey,
+              surveyEditions: editions
+            }))
+          )
+        );
+        return forkJoin(surveysWithEditions$);
+      })
+    );
+  }
+
 
   getSurveyById(id: number): Observable<Survey> {
     return this.http.get<Survey>(`${this.apiUrl}/${id}`).pipe(

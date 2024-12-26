@@ -1,1 +1,21 @@
-<p>survey-item works!</p>
+<div class="survey-item">
+  <div class="survey-header">
+    <h2>{{survey.title}}</h2>
+    <p class="description">{{survey.description}}</p>
+  </div>
+
+  <div class="editions-section">
+    <h3>Survey Editions</h3>
+    @if (survey.surveyEditions?.length) {
+      <div class="editions-list">
+        @for (edition of survey.surveyEditions; track edition.id) {
+          <div class="edition-item">
+            <span class="edition-name">{{edition.year}}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p>No editions available for this survey.</p>
+    }
+  </div>
+</div>

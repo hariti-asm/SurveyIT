@@ -1,17 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { Survey } from '../../models/survey.model';
-import {CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-survey-item',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="survey-item">
-      <h3>{{survey.title}}</h3>
-      <p>{{survey.description}}</p>
-    </div>
-  `
+  imports: [CommonModule, RouterOutlet],
+  templateUrl: './survey-item.component.html',
 })
 export class SurveyItemComponent {
   @Input() survey!: Survey;
