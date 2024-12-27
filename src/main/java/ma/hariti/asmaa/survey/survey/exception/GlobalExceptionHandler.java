@@ -70,6 +70,14 @@ public class GlobalExceptionHandler {
                 .body(ApiResponseDTO.error(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
     }
 
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponseDTO<Void>> handleGenericException(Exception ex) {
+//        log.error("Unexpected error occurred", ex);
+//        String message = ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred";
+//        return ResponseEntity
+//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(ApiResponseDTO.error(message, HttpStatus.INTERNAL_SERVER_ERROR.value()));
+//    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleGenericException(Exception ex) {
         log.error("Unexpected error occurred", ex);

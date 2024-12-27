@@ -6,12 +6,15 @@ import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterRequestDTO;
 import ma.hariti.asmaa.survey.survey.service.ChapterService;
 import ma.hariti.asmaa.survey.survey.util.AbstractCrudController;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/surveys/{surveyId}/chapters")
+@RequestMapping("/surveys/editions/{surveyEditionId}/chapters")
 public class ChapterController extends AbstractCrudController<
         ChapterRequestDTO,
         ChapterRequestDTO,
@@ -24,7 +27,12 @@ public class ChapterController extends AbstractCrudController<
         super(chapterService);
         this.chapterService = chapterService;
     }
-
+    @GetMapping
+    public ResponseEntity<ApiResponseDTO<List<ChapterRequestDTO>>> getChaptersBySurveyEdition(
+            @PathVariable Long surveyEditionId) {
+        List<ChapterRequestDTO> chapters = chapterService.getChaptersBySurveyEditionId(surveyEditionId);
+        return ResponseEntity.ok(ApiResponseDTO.success(chapters));
+    }
     @PostMapping
     public ResponseEntity<ApiResponseDTO<ChapterRequestDTO>> addChapter(
             @PathVariable Long surveyId,
@@ -35,15 +43,16 @@ public class ChapterController extends AbstractCrudController<
                 .body(ApiResponseDTO.success(savedChapter));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponseDTO<Page<ChapterRequestDTO>>> getChapters(
-            @PathVariable Long surveyId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-        return super.getAll(page, size, sortBy, sortDirection);
-    }
+//    @GetMapping
+//    public ResponseEntity<ApiResponseDTO<Page<ChapterRequestDTO>>> getChapters(
+//            @PathVariable Long surveyId,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Page<ChapterRequestDTO> chapters = chapterService.getAll(Pageable.ofSize(page));
+//        return ResponseEntity.ok(ApiResponseDTO.success(chapters));
+//    }
+
+
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<ApiResponseDTO<ChapterRequestDTO>> getChapter(

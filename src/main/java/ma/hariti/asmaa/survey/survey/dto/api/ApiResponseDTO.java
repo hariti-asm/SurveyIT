@@ -27,4 +27,6 @@ public class ApiResponseDTO<T> {
     public static <T> ApiResponseDTO<T> error(String message, T data, int status) {
         return new ApiResponseDTO<>(false, data, message, status);
     }
+
+
 }

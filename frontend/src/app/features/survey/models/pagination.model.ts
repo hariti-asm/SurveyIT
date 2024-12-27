@@ -1,5 +1,4 @@
 export interface PaginatedResponse<T> {
-  success: boolean;
   data: {
     content: T[];
     pageable: {
@@ -7,12 +6,12 @@ export interface PaginatedResponse<T> {
       pageSize: number;
       sort: any;
       offset: number;
-      unpaged: boolean;
       paged: boolean;
+      unpaged: boolean;
     };
     last: boolean;
-    totalPages: number;
     totalElements: number;
+    totalPages: number;
     first: boolean;
     size: number;
     number: number;
@@ -24,6 +23,4 @@ export interface PaginatedResponse<T> {
     numberOfElements: number;
     empty: boolean;
   };
-  error: null | string;
-  status: number;
 }

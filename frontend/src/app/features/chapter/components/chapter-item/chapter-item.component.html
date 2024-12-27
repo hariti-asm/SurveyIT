@@ -3,20 +3,36 @@
     <h3>{{ chapter.title }}</h3>
   </div>
 
-  <!-- Questions count -->
   <div class="chapter-info">
-    <span>Questions: {{ chapter.questions.length }}</span>
+    @if (chapter.questions?.length) {
+      <div class="questions-section">
+        <h4>Questions:</h4>
+        @for (question of chapter.questions; track question.id) {
+          <div class="question-item">
+            <p>{{ question.id }}</p>
+            <p>Type: {{ question.chapterId }}</p>
+          </div>
+        }
+      </div>
+    }
   </div>
 
-  <!-- Sub-chapters section -->
-  <!--@if (chapter.subChapters?.length > 0) {
+  @if (chapter.subChapters?.length) {
     <div class="sub-chapters">
       <h4>Sub-chapters:</h4>
       @for (subChapter of chapter.subChapters; track subChapter.id) {
         <div class="sub-chapter">
-          <span>{{ subChapter.title }}</span>
+          <h5>{{ subChapter.title }}</h5>
+          @if (subChapter.questions?.length) {
+            @for (question of subChapter.questions; track question.id) {
+              <div class="question-item">
+                <p>{{ question.id}}</p>
+                <p>Type: {{ question.chapterId}}</p>
+              </div>
+            }
+          }
         </div>
       }
     </div>
-  }-->
+  }
 </div>

@@ -33,13 +33,15 @@ public class SurveyService extends AbstractGenericService<Survey, Long, CreateSu
     private final ChapterRepository chapterRepository;
     public SurveyService(
             SurveyRepository surveyRepository,
-            OwnerRepository ownerRepository, SurveyRepository surveyRepository1,
+            OwnerRepository ownerRepository,
             SurveyMapper surveyMapper,
-            ChapterMapper chapterMapper, SurveyEditionRepository surveyEditionRepository, ChapterRepository chapterRepository
+            ChapterMapper chapterMapper,
+            SurveyEditionRepository surveyEditionRepository,
+            ChapterRepository chapterRepository
     ) {
         super(surveyRepository);
         this.ownerRepository = ownerRepository;
-        this.surveyRepository = surveyRepository1;
+        this.surveyRepository = surveyRepository;
         this.surveyMapper = surveyMapper;
         this.chapterMapper = chapterMapper;
         this.surveyEditionRepository = surveyEditionRepository;
@@ -114,11 +116,12 @@ public class SurveyService extends AbstractGenericService<Survey, Long, CreateSu
     }
 
     public int getQuestionCountBySurveyEditionId(Long surveyEditionId) {
-        int totalQuestions = 0;
-        List<Chapter> chapters = chapterRepository.findBySurveyEditionId(surveyEditionId);
-        for (Chapter chapter : chapters) {
-            totalQuestions += chapter.getQuestions().size();
-        }
-        return totalQuestions;
+//        int totalQuestions = 0;
+//        List<Chapter> chapters = chapterRepository.findBySurveyEditionId(surveyEditionId);
+//        for (Chapter chapter : chapters) {
+//            totalQuestions += chapter.getQuestions().size();
+//        }
+//        return totalQuestions;
+        return  2;
     }
 }

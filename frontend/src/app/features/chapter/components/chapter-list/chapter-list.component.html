@@ -4,6 +4,11 @@
   } @else if (error) {
     <p class="error">{{ error }}</p>
   } @else {
+    <p>Edition ID: {{ route.snapshot.params['editionId'] }}</p>
+    <p>Total chapters: {{ chapters.length }}</p>
+    @if (chapters.length === 0) {
+      <p>No chapters found for this edition.</p>
+    }
     @for (chapter of chapters; track chapter.id) {
       <app-chapter-item [chapter]="chapter"/>
     }

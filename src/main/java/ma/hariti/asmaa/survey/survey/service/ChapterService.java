@@ -9,6 +9,11 @@ import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
 import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyEditionRepository;
 import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +27,7 @@ public class ChapterService extends AbstractGenericService<Chapter, Long, Chapte
     private final SurveyEditionRepository surveyEditionRepository;
     private final ChapterMapper chapterMapper;
     private final ChapterRepository chapterRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ChapterService.class);
 
     public ChapterService(
             ChapterRepository chapterRepository,
@@ -76,15 +82,7 @@ public class ChapterService extends AbstractGenericService<Chapter, Long, Chapte
         return mapToCreateDto(savedChapter);
     }
 
-    public List<ChapterRequestDTO> getChaptersBySurveyEditionId(Long surveyEditionId) {
-        SurveyEdition surveyEdition = surveyEditionRepository.findById(surveyEditionId)
-                .orElseThrow(() -> new EntityNotFoundException("SurveyEdition not found with id: " + surveyEditionId));
 
-        return surveyEdition.getChapters().stream()
-                .filter(chapter -> chapter.getParentChapter() == null)
-                .map(this::mapToCreateDto)
-                .collect(Collectors.toList());
-    }
 
     public ChapterRequestDTO getChapterById(Long surveyEditionId, Long chapterId) {
         SurveyEdition surveyEdition = surveyEditionRepository.findById(surveyEditionId)
@@ -159,4 +157,26 @@ public class ChapterService extends AbstractGenericService<Chapter, Long, Chapte
     public Optional<Chapter> findById(Long chapterId) {
         return chapterRepository.findById(chapterId);
     }
+    public List<ChapterRequestDTO> getChaptersBySurveyEditionId(Long surveyEditionId) {
+        logger.info("Fetching chapters for SurveyEdition with id {}", surveyEditionId);
+
+        SurveyEdition surveyEdition = surveyEditionRepository.findById(surveyEditionId)
+                .orElseThrow(() -> new EntityNotFoundException("SurveyEdition not found with id: " + surveyEditionId));
+
+        List<ChapterRequestDTO> chapterDTOs = surveyEdition.getChapters().stream()
+                .filter(chapter -> chapter.getParentChapter() == null)
+                .map(this::mapToCreateDto)
+                .collect(Collectors.toList());
+
+        if (!chapterDTOs.isEmpty()) {
+            logger.info("Found {} chapters for SurveyEdition with id {}", chapterDTOs.size(), surveyEditionId);
+        } else {
+            logger.info("No chapters found for SurveyEdition with id {}", surveyEditionId);
+        }
+
+        return chapterDTOs;
+    }
+
+
+
 }

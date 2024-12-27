@@ -1,7 +1,6 @@
 export interface ApiResponseDTO<T> {
+  success: boolean;
   data: T;
-  message?: string;
-  status?: string;
-  success : boolean,
+  error: string | null;
+  status: number;
 }
-

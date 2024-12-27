@@ -5,6 +5,6 @@ export interface Chapter {
   title: string;
   surveyEditionId: number;
   parentChapterId?: number;
-  subChapters: Chapter[];
+  subChapters?: Chapter[];
   questions: Question[];
 }
