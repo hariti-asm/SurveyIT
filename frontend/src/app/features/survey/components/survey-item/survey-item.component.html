@@ -1,3 +1,4 @@
+<!-- survey-item.component.html -->
 <div class="survey-item">
   <div class="survey-header">
     <h2>{{survey.title}}</h2>
@@ -9,7 +10,9 @@
     @if (survey.surveyEditions.length) {
       <div class="editions-list">
         @for (edition of survey.surveyEditions; track edition.id) {
-          <div class="edition-item">
+          <div class="edition-item"
+               (click)="navigateToChapters(edition.id)"
+               style="cursor: pointer; padding: 8px; border: 1px solid #ddd; margin: 4px;">
             <span class="edition-name">{{edition.year}}</span>
           </div>
         }

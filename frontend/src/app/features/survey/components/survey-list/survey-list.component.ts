@@ -1,13 +1,15 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';  // Add this
+import { Survey } from '../../models/survey.model';
+import { SurveyItemComponent } from '../survey-item/survey-item.component';
+import { forkJoin, map } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import {SurveyService} from '../../services/Survey.service';
-import {Component, inject, OnInit} from '@angular/core';
-import {Survey} from '../../models/survey.model';
-import {SurveyItemComponent} from '../survey-item/survey-item.component';
-import {forkJoin, map} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-survey-list',
   imports: [
+    CommonModule,  // Add this
     SurveyItemComponent
   ],
   templateUrl: './survey-list.component.html',

@@ -1,11 +1,16 @@
-import { ApplicationConfig } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import {routes} from './app/app.routes';
+import { routes } from './app/app.routes';
+import { withViewTransitions } from '@angular/router';
 
-export const appConfig: ApplicationConfig = {
+bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes),
-    provideHttpClient()
+    provideHttpClient(),
+    provideRouter(
+      routes,
+      withViewTransitions()
+    )
   ]
-};
+}).catch(err => console.error(err));
