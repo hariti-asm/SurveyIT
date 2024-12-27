@@ -9,27 +9,60 @@
         <h4>Questions:</h4>
         @for (question of chapter.questions; track question.id) {
           <div class="question-item">
-            <p>{{ question.id }}</p>
-            <p>Type: {{ question.chapterId }}</p>
+            <p class="question-text">{{ question.text }}</p>
+            <p class="question-type">
+              Type: {{ question.type === 0 ? 'Single Choice' : 'Multiple Choice' }}
+            </p>
+
+            @if (question.answers?.length) {
+              <div class="choices-container">
+                <p class="choices-label">Choices:</p>
+                @for (answer of question.answers; track answer.id) {
+                  <div class="choice-item">
+                    <span class="choice-text">{{ answer.text }}</span>
+                    <br>
+                    <span class="selection-count">({{ answer.selectionCount }} responses)</span>
+                  </div>
+                }
+              </div>
+            }
           </div>
         }
       </div>
     }
   </div>
 
+  <!-- Sub-chapters section -->
   @if (chapter.subChapters?.length) {
     <div class="sub-chapters">
       <h4>Sub-chapters:</h4>
       @for (subChapter of chapter.subChapters; track subChapter.id) {
         <div class="sub-chapter">
           <h5>{{ subChapter.title }}</h5>
+          <!-- Show questions for subchapter -->
           @if (subChapter.questions?.length) {
-            @for (question of subChapter.questions; track question.id) {
-              <div class="question-item">
-                <p>{{ question.id}}</p>
-                <p>Type: {{ question.chapterId}}</p>
-              </div>
-            }
+            <div class="questions-section">
+              @for (question of subChapter.questions; track question.id) {
+                <div class="question-item">
+                  <p class="question-text">{{ question.text }}</p>
+                  <p class="question-type">
+                    Type: {{ question.type === 0 ? 'Single Choice' : 'Multiple Choice' }}
+                  </p>
+
+                  @if (question.answers?.length) {
+                    <div class="choices-container">
+                      <p class="choices-label">Choices:</p>
+                      @for (answer of question.answers; track answer.id) {
+                        <div class="choice-item">
+                          <span class="choice-text">{{ answer.text }}</span>
+                          <span class="selection-count">({{ answer.selectionCount }} responses)</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
           }
         </div>
       }

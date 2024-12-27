@@ -67,6 +67,7 @@ public class QuestionController extends AbstractCrudController<
                 .body(ApiResponseDTO.success(null));
     }
 
+
     @Override
     public ResponseEntity<ApiResponseDTO<Page<QuestionDTO>>> getAll(
             int page,
