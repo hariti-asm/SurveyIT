@@ -1,16 +1,62 @@
-<div class="chapters-container">
-  @if (loading) {
-    <p>Loading chapters...</p>
-  } @else if (error) {
-    <p class="error">{{ error }}</p>
-  } @else {
-    <p>Edition ID: {{ route.snapshot.params['editionId'] }}</p>
-    <p>Total chapters: {{ chapters.length }}</p>
-    @if (chapters.length === 0) {
-      <p>No chapters found for this edition.</p>
+<div class="layout-container">
+  <!-- Left Panel - Chapter Tree -->
+  <div class="tree-panel">
+    @if (loading) {
+      <p class="loading">Loading chapters...</p>
+    } @else if (error) {
+      <p class="error">{{ error }}</p>
+    } @else {
+      @for (chapter of chapters; track chapter.id) {
+        <app-chapter-item
+          [chapter]="chapter"
+          [selectedSubChapterId]="selectedSubChapterId"
+          (subChapterSelected)="onSubChapterSelect($event)"/>
+      }
     }
-    @for (chapter of chapters; track chapter.id) {
-      <app-chapter-item [chapter]="chapter"/>
-    }
+  </div>
+
+  @if (selectedSubChapter) {
+    <div class="content-panel">
+      <div class="questions-section">
+        <h3>Questions for {{ selectedSubChapter.title }}</h3>
+        @for (question of selectedSubChapter.questions; track question.id) {
+          <div class="question-container">
+            <div
+              class="question-header"
+              (click)="toggleAnswers(question)"
+              [class.expanded]="question.showAnswers">
+              <div class="question-text">{{ question.text }}</div>
+              <div class="question-type">
+                Type: {{ question.type === 0 ? 'Single Choice' : 'Multiple Choice' }}
+              </div>
+              <span class="expand-icon">{{ question.showAnswers ? '▼' : '▶' }}</span>
+            </div>
+
+            @if (question.showAnswers && question.answers?.length) {
+              <div class="answers-table">
+                <table>
+                  <thead>
+                  <tr>
+                    <th>Answer</th>
+                    <th>Responses</th>
+                    <th>Percentage</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @for (answer of question.answers; track answer.id) {
+                      <tr>
+                        <td>{{ answer.text }}</td>
+                        <td>{{ answer.selectionCount }}</td>
+                        <td>{{ calculatePercentage(answer.selectionCount, question.answers) }}%</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>

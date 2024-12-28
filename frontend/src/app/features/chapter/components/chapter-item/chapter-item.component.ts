@@ -1,14 +1,25 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Chapter } from '../../models/chapter.model';
 
 @Component({
   selector: 'app-chapter-item',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './chapter-item.component.html',
-  standalone: true,
-  styleUrl: './chapter-item.component.scss'
+  styleUrls: ['./chapter-item.component.scss']
 })
 export class ChapterItemComponent {
-  @Input() chapter!: Chapter;
+  @Input() chapter!: any;
+  @Input() selectedSubChapterId: number | null = null;
+  @Output() subChapterSelected = new EventEmitter<any>();
+
+  isExpanded = false;
+
+  toggleChapter(): void {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  onSubChapterClick(subChapter: any): void {
+    this.subChapterSelected.emit(subChapter);
+  }
 }
