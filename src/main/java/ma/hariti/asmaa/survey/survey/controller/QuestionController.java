@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/surveys/{surveyId}/chapters/{chapterId}/subchapters")
 public class QuestionController extends AbstractCrudController<
@@ -38,14 +40,14 @@ public class QuestionController extends AbstractCrudController<
     }
 
     @GetMapping("/{subChapterId}/questions")
-    public ResponseEntity<ApiResponseDTO<Page<QuestionDTO>>> getQuestions(
+    public ResponseEntity<ApiResponseDTO<List<QuestionDTO>>> getQuestions(
             @PathVariable Long subChapterId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sortDirection) {
 
-        Page<QuestionDTO> questionsPage = questionService.getQuestionsForSubChapter(subChapterId, page, size);
-        return ResponseEntity.ok(ApiResponseDTO.success(questionsPage, (int) questionsPage.getTotalElements()));
+        List<QuestionDTO> questionsPage = questionService.getQuestionsForSubChapter(subChapterId, page, size);
+        return ResponseEntity.ok(ApiResponseDTO.success(questionsPage));
     }
 
     @PutMapping("/{subChapterId}/questions/{questionId}")

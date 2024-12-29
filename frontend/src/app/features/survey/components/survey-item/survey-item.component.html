@@ -1,29 +1,23 @@
-<!-- survey-item.component.html -->
 <div class="survey-item">
   <div class="survey-header">
-    <h2>{{survey.id}}</h2>
-
-    <h2>{{survey.title}}</h2>
-    <p class="description">{{survey.description}}</p>
+    <h2>{{ survey.id }}</h2>
+    <h2>{{ survey.title }}</h2>
+    <p class="description">{{ survey.description }}</p>
   </div>
 
   <div class="editions-section">
     <h3>Survey Editions</h3>
-    @if (survey.surveyEditions.length) {
-      <div class="editions-list">
-        @for (edition of survey.surveyEditions; track edition.id) {
-          <div class="edition-item"
-               (click)="navigateToChapters(edition.id)"
-               style="cursor: pointer; padding: 8px; border: 1px solid #ddd; margin: 4px;">
-            <span class="edition-name">{{edition.year}}</span>
-            <br>
-            <span class="edition-name">{{edition.id}}</span>
-
-
-          </div>
-        }
+    @for (edition of survey.surveyEditions; track edition.id) {
+      <div
+        class="edition-item"
+        (click)="navigateToChapters(edition.id)"
+        style="cursor: pointer; padding: 8px; border: 1px solid #ddd; margin: 4px;">
+        <span class="edition-name">{{ edition.year }}</span>
+        <br>
+        <span class="edition-id">{{ edition.id }}</span>
       </div>
-    } @else {
+    }
+    @if (!survey.surveyEditions.length) {
       <p>No editions available for this survey.</p>
     }
   </div>

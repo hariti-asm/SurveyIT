@@ -3,10 +3,14 @@ package ma.hariti.asmaa.survey.survey.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterRequestDTO;
+import ma.hariti.asmaa.survey.survey.dto.question.QuestionDTO;
 import ma.hariti.asmaa.survey.survey.entity.Chapter;
+import ma.hariti.asmaa.survey.survey.entity.Question;
 import ma.hariti.asmaa.survey.survey.entity.SurveyEdition;
 import ma.hariti.asmaa.survey.survey.mapper.ChapterMapper;
+import ma.hariti.asmaa.survey.survey.mapper.QuestionMapper;
 import ma.hariti.asmaa.survey.survey.repository.ChapterRepository;
+import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.repository.SurveyEditionRepository;
 import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
 import org.slf4j.Logger;
@@ -25,19 +29,23 @@ import java.util.stream.Collectors;
 public class ChapterService extends AbstractGenericService<Chapter, Long, ChapterRequestDTO, ChapterRequestDTO, ChapterRequestDTO> {
 
     private final SurveyEditionRepository surveyEditionRepository;
+    private final QuestionRepository questionRepository;
     private final ChapterMapper chapterMapper;
     private final ChapterRepository chapterRepository;
+    private final QuestionMapper questionMapper;
     private static final Logger logger = LoggerFactory.getLogger(ChapterService.class);
 
     public ChapterService(
             ChapterRepository chapterRepository,
-            SurveyEditionRepository surveyEditionRepository,
-            ChapterMapper chapterMapper
+            SurveyEditionRepository surveyEditionRepository, QuestionRepository questionRepository,
+            ChapterMapper chapterMapper, QuestionMapper questionMapper
     ) {
         super(chapterRepository);
         this.surveyEditionRepository = surveyEditionRepository;
+        this.questionRepository = questionRepository;
         this.chapterMapper = chapterMapper;
         this.chapterRepository = chapterRepository;
+        this.questionMapper = questionMapper;
     }
 
     @Override
@@ -176,6 +184,12 @@ public class ChapterService extends AbstractGenericService<Chapter, Long, Chapte
 
         return chapterDTOs;
     }
+    public List<QuestionDTO> getQuestionsBySubChapterId(Long subChapterId) {
+        List<Question> questions = questionRepository.findBySubChapterId(subChapterId);
+        return questionMapper.toDTOList(questions);
+    }
+
+
 
 
 

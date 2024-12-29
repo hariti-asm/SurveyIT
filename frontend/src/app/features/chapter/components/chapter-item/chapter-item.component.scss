@@ -1,52 +1,92 @@
+/* chapter-item.component.scss */
+.chapter-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
 .chapter {
-  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .chapter-header {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
+  padding: 1rem;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background-color 0.2s;
+}
 
-  &:hover {
-    background: #f1f5f9;
-  }
-
-  h3 {
-    margin: 0;
-    margin-left: 0.5rem;
-    font-size: 1rem;
-  }
+.chapter-header:hover {
+  background: #f1f5f9;
 }
 
 .expand-icon {
-  font-size: 0.75rem;
   color: #64748b;
+  font-size: 0.875rem;
+  margin-right: 0.75rem;
 }
 
 .sub-chapters {
-  margin-left: 1.5rem;
+  margin-left: 2rem;
+  padding-left: 1rem;
   border-left: 2px solid #e2e8f0;
-  padding-left: 0.5rem;
 }
 
 .sub-chapter-item {
-  padding: 0.5rem;
-  margin: 0.25rem 0;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 0.375rem;
   cursor: pointer;
-  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sub-chapter-item:hover {
+  background: #f1f5f9;
+}
+
+.sub-chapter-item.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.question-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.question-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.answers-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.answers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.answer-card {
+  background: #f8fafc;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+}
+
+.answer-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
   color: #64748b;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #f1f5f9;
-    color: #2563eb;
-  }
-
-  &.active {
-    background: #eff6ff;
-    color: #2563eb;
-    font-weight: 500;
-  }
 }

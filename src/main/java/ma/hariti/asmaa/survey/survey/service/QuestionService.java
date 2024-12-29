@@ -15,6 +15,7 @@ import ma.hariti.asmaa.survey.survey.repository.QuestionRepository;
 import ma.hariti.asmaa.survey.survey.util.AbstractGenericService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -127,21 +128,25 @@ public class QuestionService extends AbstractGenericService<Question, Long, Ques
         delete(questionId);
     }
 
-    public Page<QuestionDTO> getQuestionsForSubChapter(Long subChapterId, int page, int size) {
-        Page<Question> questionsPage = questionRepository.findBySubChapterId(subChapterId, PageRequest.of(page, size));
+    public List<QuestionDTO> getQuestionsForSubChapter(Long subChapterId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Question> questionsPage = questionRepository.findBySubChapterId(subChapterId);
 
-        return questionsPage.map(question -> {
-            QuestionDTO dto = new QuestionDTO();
-            dto.setId(question.getId());
-            dto.setText(question.getText());
-            dto.setSubChapterId(question.getSubChapter().getId());
-            dto.setChapterId(question.getChapter().getId());
-            dto.setType(question.getType());
-            dto.setAnswerCount(question.getAnswerCount());
-            dto.setRequired(question.getRequired());
-            return dto;
-        });
+        return questionsPage.stream()
+                .map(question -> {
+                    QuestionDTO dto = new QuestionDTO();
+                    dto.setId(question.getId());
+                    dto.setText(question.getText());
+                    dto.setSubChapterId(question.getSubChapter().getId());
+                    dto.setChapterId(question.getChapter().getId());
+                    dto.setType(question.getType());
+                    dto.setAnswerCount(question.getAnswerCount());
+                    dto.setRequired(question.getRequired());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
+
 
     public QuestionDTO getQuestionWithAnswers(Long questionId) {
         Question question = findOrThrow(questionId);

@@ -3,6 +3,7 @@ package ma.hariti.asmaa.survey.survey.controller;
 import jakarta.validation.Valid;
 import ma.hariti.asmaa.survey.survey.dto.api.ApiResponseDTO;
 import ma.hariti.asmaa.survey.survey.dto.chapter.ChapterRequestDTO;
+import ma.hariti.asmaa.survey.survey.dto.question.QuestionDTO;
 import ma.hariti.asmaa.survey.survey.service.ChapterService;
 import ma.hariti.asmaa.survey.survey.util.AbstractCrudController;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,14 @@ public class ChapterController extends AbstractCrudController<
         super(chapterService);
         this.chapterService = chapterService;
     }
+//    @GetMapping("/{chapterId}/subchapters/{subChapterId}/questions")
+//    public ResponseEntity<ApiResponseDTO<List<QuestionDTO>>> getQuestionsBySubChapter(
+//            @PathVariable Long chapterId,
+//            @PathVariable Long subChapterId) {
+//        List<QuestionDTO> questions = chapterService.getQuestionsBySubChapterId(chapterId, subChapterId);
+//        return ResponseEntity.ok(ApiResponseDTO.success(questions));
+//    }
+
     @GetMapping
     public ResponseEntity<ApiResponseDTO<List<ChapterRequestDTO>>> getChaptersBySurveyEdition(
             @PathVariable Long surveyEditionId) {

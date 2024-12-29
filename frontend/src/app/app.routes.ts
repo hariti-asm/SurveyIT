@@ -9,5 +9,8 @@ export const routes: Routes = [
   {
     path: 'editions/:editionId/chapters',
     loadChildren: () => import('./features/chapter/models/chapter.routes').then(m => m.chapterRoutes)
-  }
+  },
+  {path: 'surveys/:surveyId/editions/:editionId/chapters',
+  loadChildren: () => import('./features/chapter/models/chapter.routes').then(m => m.chapterRoutes)
+}
 ];
