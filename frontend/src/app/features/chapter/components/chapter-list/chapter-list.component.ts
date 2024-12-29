@@ -33,7 +33,13 @@ export class ChapterListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
+  getQuestionType(type: string): string {
+    return type === 'MULTIPLE_CHOICE' ? 'Multiple Choice' : 'Single Choice';
+  }
 
+  isRequiredText(required: boolean): string {
+    return required ? 'Yes' : 'No';
+  }
   private loadChapters(): void {
     this.loading = true;
     this.subscription = this.route.params.subscribe(params => {

@@ -16,52 +16,81 @@
   </div>
   @if (selectedSubChapter) {
     <div class="content-panel">
-      <div class="questions-section">
-        <h3>Questions for {{ selectedSubChapter.title }}</h3>
-        @if (loading) {
-          <p>Loading questions...</p>
-        } @else if (error) {
-          <p class="error">{{ error }}</p>
-        } @else {
-          @for (question of selectedSubChapter.questions; track question.id) {
-            <div class="question-container">
-              <div
-                class="question-header"
-                (click)="toggleAnswers(question)"
-                [class.expanded]="question.showAnswers">
-                <div class="question-text">{{ question.text }}</div>
-                <div class="question-type">
-                  Type: {{ question.type }}
-                </div>
-                <span class="expand-icon">{{ question.showAnswers ? '▼' : '▶' }}</span>
-              </div>
+      <h3>Questions for {{ selectedSubChapter.title }}</h3>
 
-              @if (question.showAnswers && question.answers?.length) {
-                <div class="answers-table">
-                  <table>
-                    <thead>
-                    <tr>
-                      <th>Answer</th>
-                      <th>Responses</th>
-                      <th>Percentage</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                      @for (answer of question.answers; track answer.id) {
-                        <tr>
-                          <td>{{ answer.text }}</td>
-                          <td>{{ answer.selectionCount }}</td>
-                          <td>{{ calculatePercentage(answer.selectionCount, question.answerCount) | percent }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
+      @if (loading) {
+        <div class="loading">Loading questions...</div>
+      } @else if (error) {
+        <div class="error">{{ error }}</div>
+      } @else if (selectedSubChapter.questions?.length) {
+        <div class="table-responsive">
+          <table class="questions-table">
+            <thead>
+            <tr>
+              <th></th>
+              <th>ID</th>
+              <th>Question Text</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Answer Count</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (question of selectedSubChapter.questions; track question.id) {
+                <tr class="question-row" [class.expanded]="question.showAnswers">
+                  <td>
+                    <button
+                      class="toggle-btn"
+                      (click)="toggleAnswers(question)"
+                      [attr.aria-label]="question.showAnswers ? 'Hide answers' : 'Show answers'">
+                      {{ question.showAnswers ? '▼' : '▶' }}
+                    </button>
+                  </td>
+                  <td>{{ question.id }}</td>
+                  <td>{{ question.text }}</td>
+                  <td>{{ getQuestionType(question.type) }}</td>
+                  <td>{{ isRequiredText(question.required) }}</td>
+                  <td>{{ question.answerCount }}</td>
+                </tr>
+                @if (question.showAnswers) {
+                  <tr class="answers-row">
+                    <td colspan="6">
+                      <div class="answers-container">
+                        <table class="answers-table">
+                          <thead>
+                          <tr>
+                            <th>Answer Text</th>
+                            <th>Selection Count</th>
+                            <th>Percentage</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            @if (question.answers?.length) {
+                              @for (answer of question.answers; track answer.id) {
+                                <tr>
+                                  <td>{{ answer.text }}</td>
+                                  <td>{{ answer.selectionCount }}</td>
+                                  <td>{{ calculatePercentage(answer.selectionCount, question.answerCount) | percent:'1.0-1' }}</td>
+                                </tr>
+                              }
+                            } @else {
+                              <tr>
+                                <td colspan="3" class="no-data">No answers available</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
-            </div>
-          }
-        }
-      </div>
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="no-data">No questions available for this subchapter</div>
+      }
     </div>
   }
 </div>
