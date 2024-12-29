@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {Component, OnInit, OnDestroy, inject, ElementRef, ViewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ChapterItemComponent } from '../chapter-item/chapter-item.component';
@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ChapterService } from '../../services/chapter.service';
 import { QuestionService } from '../../../question/services/question.service';
 import { Question } from '../../models/question.model';
+import {AnswerService} from '../../../answer/services/answer.service';
 @Component({
   selector: 'app-chapter-list',
   standalone: true,
@@ -19,12 +20,16 @@ export class ChapterListComponent implements OnInit, OnDestroy {
   error: string | null = null;
   selectedSubChapter: any = null;
   selectedSubChapterId: number | null = null;
-  questions: Question[] = [];
+  editingQuestion: Question | null = null;
+  newQuestion: Question | null = null;
+  @ViewChild('newQuestionInput') newQuestionInput!: ElementRef;
 
   protected readonly route = inject(ActivatedRoute);
   private readonly chapterService = inject(ChapterService);
   private readonly questionService = inject(QuestionService);
+  private readonly answerService = inject(AnswerService);
   private subscription?: Subscription;
+
 
   ngOnInit(): void {
     this.loadChapters();
@@ -40,6 +45,8 @@ export class ChapterListComponent implements OnInit, OnDestroy {
   isRequiredText(required: boolean): string {
     return required ? 'Yes' : 'No';
   }
+  selectedQuestion: any = null;
+
   private loadChapters(): void {
     this.loading = true;
     this.subscription = this.route.params.subscribe(params => {
@@ -102,10 +109,72 @@ export class ChapterListComponent implements OnInit, OnDestroy {
   }
 
   toggleAnswers(question: any): void {
-    question.showAnswers = !question.showAnswers;
+    // If this question is already selected, hide it
+    if (this.selectedQuestion === question) {
+      this.selectedQuestion = null;
+      question.showAnswers = false;
+      return;
+    }
+
+    // Set new selected question
+    this.selectedQuestion = question;
+    question.showAnswers = true;
+
+    // Only fetch answers if we haven't already
+    if (!question.answers) {
+      this.loading = true;
+      this.answerService.getAnswersByQuestionId(question.id).subscribe({
+        next: (response) => {
+          if (response) {
+            question.answers = response;
+            // Calculate percentages for the answers
+            const totalSelections = question.answers.reduce(
+              (sum: any, answer: { selectionCount: any; }) => sum + (answer.selectionCount || 0),
+              0
+            );
+
+            question.answers.forEach((answer: { percentage: number; selectionCount: any; }) => {
+              answer.percentage = this.calculatePercentage(
+                answer.selectionCount || 0,
+                totalSelections
+              );
+            });
+          } else {
+            this.error = 'Failed to load answers';
+            question.showAnswers = false;
+            this.selectedQuestion = null;
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading answers:', error);
+          this.error = error.message || 'Failed to load answers';
+          this.loading = false;
+          question.showAnswers = false;
+          this.selectedQuestion = null;
+        }
+      });
+    }
+  }
+
+  private calculateAnswerPercentages(question: Question): void {
+    const totalSelections = question.answers?.reduce(
+      (sum, answer) => sum + (answer.selectionCount || 0),
+      0
+    ) || 0;
+
+    if (question.answers) {
+      question.answers.forEach(answer => {
+        answer.selectionCount = this.calculatePercentage(
+          answer.selectionCount || 0,
+          totalSelections
+        );
+      });
+    }
   }
 
   calculatePercentage(selectionCount: number, totalCount: number): number {
-    return totalCount === 0 ? 0 : (selectionCount / totalCount) * 100;
+    return totalCount === 0 ? 0 : Math.round((selectionCount / totalCount) * 100);
   }
+
 }

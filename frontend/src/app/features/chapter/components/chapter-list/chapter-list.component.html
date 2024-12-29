@@ -1,5 +1,4 @@
 <div class="layout-container">
-
   <div class="tree-panel">
     @if (loading) {
       <p class="loading">Loading chapters...</p>
@@ -14,83 +13,65 @@
       }
     }
   </div>
-  @if (selectedSubChapter) {
-    <div class="content-panel">
-      <h3>Questions for {{ selectedSubChapter.title }}</h3>
 
-      @if (loading) {
-        <div class="loading">Loading questions...</div>
-      } @else if (error) {
-        <div class="error">{{ error }}</div>
-      } @else if (selectedSubChapter.questions?.length) {
-        <div class="table-responsive">
-          <table class="questions-table">
-            <thead>
-            <tr>
-              <th></th>
-              <th>ID</th>
-              <th>Question Text</th>
-              <th>Type</th>
-              <th>Required</th>
-              <th>Answer Count</th>
-            </tr>
-            </thead>
-            <tbody>
-              @for (question of selectedSubChapter.questions; track question.id) {
-                <tr class="question-row" [class.expanded]="question.showAnswers">
-                  <td>
-                    <button
-                      class="toggle-btn"
-                      (click)="toggleAnswers(question)"
-                      [attr.aria-label]="question.showAnswers ? 'Hide answers' : 'Show answers'">
-                      {{ question.showAnswers ? '▼' : '▶' }}
-                    </button>
-                  </td>
-                  <td>{{ question.id }}</td>
-                  <td>{{ question.text }}</td>
-                  <td>{{ getQuestionType(question.type) }}</td>
-                  <td>{{ isRequiredText(question.required) }}</td>
-                  <td>{{ question.answerCount }}</td>
-                </tr>
-                @if (question.showAnswers) {
-                  <tr class="answers-row">
-                    <td colspan="6">
-                      <div class="answers-container">
-                        <table class="answers-table">
-                          <thead>
-                          <tr>
-                            <th>Answer Text</th>
-                            <th>Selection Count</th>
-                            <th>Percentage</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            @if (question.answers?.length) {
-                              @for (answer of question.answers; track answer.id) {
-                                <tr>
-                                  <td>{{ answer.text }}</td>
-                                  <td>{{ answer.selectionCount }}</td>
-                                  <td>{{ calculatePercentage(answer.selectionCount, question.answerCount) | percent:'1.0-1' }}</td>
-                                </tr>
-                              }
-                            } @else {
-                              <tr>
-                                <td colspan="3" class="no-data">No answers available</td>
-                              </tr>
-                            }
-                          </tbody>
-                        </table>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              }
-            </tbody>
-          </table>
-        </div>
-      } @else {
-        <div class="no-data">No questions available for this subchapter</div>
-      }
+  <div class="content-panel">
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="selectedSubChapter" class="tables-container">
+      <h2>{{ selectedSubChapter.title }}</h2>
+
+      <!-- Questions Table -->
+      <table class="questions-table">
+        <thead>
+        <tr>
+          <th>Question</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let question of selectedSubChapter.questions"
+            class="question-row">
+          <td>{{ question.text }}</td>
+          <td>{{ getQuestionType(question.type) }}</td>
+          <td>{{ isRequiredText(question.required) }}</td>
+          <td>
+            <button (click)="toggleAnswers(question)" class="toggle-btn">
+              {{ question.showAnswers ? 'Hide Answers' : 'Show Answers' }}
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Separate Answers Section -->
+      <div *ngIf="selectedQuestion?.showAnswers" class="answers-section">
+        <h3>Answers for: {{ selectedQuestion.text }}</h3>
+        <table class="answers-table">
+          <thead>
+          <tr>
+            <th>Answer</th>
+            <th>Responses</th>
+            <th>Percentage</th>
+            <th>Distribution</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let answer of selectedQuestion.answers">
+            <td>{{ answer.text }}</td>
+            <td>{{ answer.selectionCount }}</td>
+            <td>{{ answer.percentage }}%</td>
+            <td class="progress-cell">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="answer.percentage"></div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  }
+  </div>
 </div>

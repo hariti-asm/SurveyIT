@@ -1,5 +1,6 @@
 package ma.hariti.asmaa.survey.survey.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_chapter_id", nullable = false)
     private Chapter subChapter;
-
+    @JsonManagedReference
     @OneToMany(
             mappedBy = "question",
             cascade = CascadeType.ALL,
