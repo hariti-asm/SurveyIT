@@ -22,8 +22,11 @@
       <h2>{{ selectedSubChapter.title }}</h2>
 
       <div class="table-content" [class.show-answers]="selectedQuestion?.showAnswers">
-        <!-- Questions View -->
-        <div class="questions-view">
+        <div *ngIf="!selectedSubChapter.questions?.length" class="no-questions">
+          <p>No questions available for this subchapter.</p>
+        </div>
+
+        <div *ngIf="selectedSubChapter.questions?.length" class="questions-view">
           <table class="questions-table">
             <thead>
             <tr>
@@ -34,8 +37,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let question of selectedSubChapter.questions"
-                class="question-row">
+            <tr *ngFor="let question of selectedSubChapter.questions" class="question-row">
               <td>{{ question.text }}</td>
               <td>{{ getQuestionType(question.type) }}</td>
               <td>{{ isRequiredText(question.required) }}</td>
@@ -49,7 +51,6 @@
           </table>
         </div>
 
-        <!-- Answers View -->
         <div class="answers-view">
           <button (click)="selectedQuestion.showAnswers = false" class="back-btn">
             ← Back to Questions
