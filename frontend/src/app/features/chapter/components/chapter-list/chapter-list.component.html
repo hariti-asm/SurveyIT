@@ -21,56 +21,63 @@
     <div *ngIf="selectedSubChapter" class="tables-container">
       <h2>{{ selectedSubChapter.title }}</h2>
 
-      <!-- Questions Table -->
-      <table class="questions-table">
-        <thead>
-        <tr>
-          <th>Question</th>
-          <th>Type</th>
-          <th>Required</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let question of selectedSubChapter.questions"
-            class="question-row">
-          <td>{{ question.text }}</td>
-          <td>{{ getQuestionType(question.type) }}</td>
-          <td>{{ isRequiredText(question.required) }}</td>
-          <td>
-            <button (click)="toggleAnswers(question)" class="toggle-btn">
-              {{ question.showAnswers ? 'Hide Answers' : 'Show Answers' }}
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-content" [class.show-answers]="selectedQuestion?.showAnswers">
+        <!-- Questions View -->
+        <div class="questions-view">
+          <table class="questions-table">
+            <thead>
+            <tr>
+              <th>Question</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let question of selectedSubChapter.questions"
+                class="question-row">
+              <td>{{ question.text }}</td>
+              <td>{{ getQuestionType(question.type) }}</td>
+              <td>{{ isRequiredText(question.required) }}</td>
+              <td>
+                <button (click)="toggleAnswers(question)" class="toggle-btn">
+                  View Answers
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <!-- Separate Answers Section -->
-      <div *ngIf="selectedQuestion?.showAnswers" class="answers-section">
-        <h3>Answers for: {{ selectedQuestion.text }}</h3>
-        <table class="answers-table">
-          <thead>
-          <tr>
-            <th>Answer</th>
-            <th>Responses</th>
-            <th>Percentage</th>
-            <th>Distribution</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let answer of selectedQuestion.answers">
-            <td>{{ answer.text }}</td>
-            <td>{{ answer.selectionCount }}</td>
-            <td>{{ answer.percentage }}%</td>
-            <td class="progress-cell">
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="answer.percentage"></div>
-              </div>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+        <!-- Answers View -->
+        <div class="answers-view">
+          <button (click)="selectedQuestion.showAnswers = false" class="back-btn">
+            ← Back to Questions
+          </button>
+          <h3>Answers for: {{ selectedQuestion?.text }}</h3>
+          <table class="answers-table">
+            <thead>
+            <tr>
+              <th>Answer</th>
+              <th>Responses</th>
+              <th>Percentage</th>
+              <th>Distribution</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let answer of selectedQuestion?.answers">
+              <td>{{ answer.text }}</td>
+              <td>{{ answer.selectionCount }}</td>
+              <td>{{ answer.percentage }}%</td>
+              <td class="progress-cell">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="answer.percentage"></div>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

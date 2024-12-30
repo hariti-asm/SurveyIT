@@ -109,25 +109,21 @@ export class ChapterListComponent implements OnInit, OnDestroy {
   }
 
   toggleAnswers(question: any): void {
-    // If this question is already selected, hide it
     if (this.selectedQuestion === question) {
       this.selectedQuestion = null;
       question.showAnswers = false;
       return;
     }
 
-    // Set new selected question
     this.selectedQuestion = question;
     question.showAnswers = true;
 
-    // Only fetch answers if we haven't already
     if (!question.answers) {
       this.loading = true;
       this.answerService.getAnswersByQuestionId(question.id).subscribe({
         next: (response) => {
           if (response) {
             question.answers = response;
-            // Calculate percentages for the answers
             const totalSelections = question.answers.reduce(
               (sum: any, answer: { selectionCount: any; }) => sum + (answer.selectionCount || 0),
               0
