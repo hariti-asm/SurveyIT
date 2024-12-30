@@ -49,7 +49,6 @@ export class SurveyListComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  // Pagination properties
   currentPage = 0;
   totalPages = 0;
   pageSize = 10;

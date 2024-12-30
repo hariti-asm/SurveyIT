@@ -8,6 +8,8 @@ import { Survey } from '../../models/survey.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './survey-item.component.html',
+  styleUrls: ['./survey-item.component.scss']
+
 })
 export class SurveyItemComponent {
   @Input() survey!: Survey;
